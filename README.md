@@ -21,11 +21,13 @@ A media downloader application built with Avalonia UI.
 
 ### For End Users
 
-No additional software required! The application comes with bundled tools:
+**No additional software required!** The application is distributed as a self-contained installer that includes everything needed:
+
+- **.NET 9.0 Runtime** - Bundled with the application
 - **yt-dlp** - Media downloader (bundled)
 - **ffmpeg** - Audio/video processing (bundled)
 
-The application automatically uses the bundled tools, but can also detect system-installed tools if available.
+Simply download and run the MSI installer - no manual .NET installation needed!
 
 ## Usage
 
@@ -40,12 +42,25 @@ Access the settings panel by clicking the settings button to:
 - Switch between Dark and Light themes
 - Change language between English and German
 
+## Installation
+
+Download the latest MSI installer from the releases page and run it. The installer will:
+- Install to `C:\Program Files\RealSnag Media Downloader\`
+- Include all .NET 9.0 runtime files (self-contained)
+- Create desktop and Start Menu shortcuts
+- Show MIT license agreement
+- Support silent installation
+- Provide clean uninstallation
+
+**No prerequisites required** - everything is included in the installer!
+
 ## Technical Details
 
 - Built with .NET 9.0 and Avalonia UI
 - Self-contained deployment with bundled tools
 - Auto-detects tool locations (bundled tools take priority)
 - Cross-platform tool detection for maximum compatibility
+- Professional MSI installer with proper Windows integration
 - Version: v1.1.0
 
 ## License

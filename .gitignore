@@ -1,7 +1,6 @@
 # Build outputs
 bin/
 obj/
-publish/
 
 # User-specific files
 *.user
@@ -34,3 +33,4 @@ Desktop.ini
 # Release packages
 *.zip
 publish/
+Installer/

@@ -72,9 +72,9 @@
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *, Auto" Margin="10">
         <!-- Header with Version and Copyright -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
-            <TextBlock Name="LinkLabel" Text="Link eingeben:" Grid.Column="0" Margin="5"/>
+            <TextBlock Name="LinkLabel" Text="Enter Link:" Grid.Column="0" Margin="5"/>
             <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" Margin="5">
-                <TextBlock Name="VersionLabel" Text="v1.1.0" 
+                <TextBlock Name="VersionLabel" Text="v1.1.1" 
                           FontSize="12" Opacity="0.7" HorizontalAlignment="Right"/>
                 <TextBlock Text="© 2025 Realgar. MIT License." 
                           FontSize="10" Opacity="0.5" HorizontalAlignment="Right"/>
@@ -86,14 +86,14 @@
         <Grid Grid.Row="2" Margin="5" ColumnDefinitions="Auto, *">
             <Image Name="ThumbnailImage" Width="150" Height="150" Margin="5" Grid.Column="0"/>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Column="1" Margin="10">
-                <TextBlock Name="MetadataTextBlock" Text="Medien-Metadaten werden hier angezeigt, nachdem Sie den Link eingefügt haben" 
+                <TextBlock Name="MetadataTextBlock" Text="Media metadata will appear here after you paste the link" 
                           TextWrapping="Wrap" VerticalAlignment="Top"/>
             </ScrollViewer>
         </Grid>
 
         <!-- Format Selection -->
         <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="5,10,0,0">
-            <TextBlock Name="FormatLabel" Text="Format wählen:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBlock Name="FormatLabel" Text="Select Format:" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <RadioButton Name="Mp4RadioButton" Content="MP4" IsChecked="True" Margin="10,0"/>
             <RadioButton Name="Mp3RadioButton" Content="MP3" Margin="10,0"/>
         </StackPanel>
@@ -101,12 +101,12 @@
         <!-- Status and Progress -->
         <Grid Grid.Row="4" Margin="5,10,0,0" ColumnDefinitions="Auto, Auto, *">
             <TextBlock Name="StatusTextLabel" Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0" Grid.Column="0"/>
-            <TextBlock Name="StatusLabel" Text="Bereit" VerticalAlignment="Center" Grid.Column="1"/>
+            <TextBlock Name="StatusLabel" Text="Idle" VerticalAlignment="Center" Grid.Column="1"/>
             <ProgressBar Name="ProgressBar" Height="20" IsVisible="False" Margin="20,0,0,0" Grid.Column="2"/>
         </Grid>
 
         <!-- Logs -->
-        <TextBlock Name="LogsLabel" Text="Protokolle:" Grid.Row="5" Margin="5,0,0,0"/>
+        <TextBlock Name="LogsLabel" Text="Logs:" Grid.Row="5" Margin="5,0,0,0"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="6" Margin="5">
             <TextBox Name="LogsTextBox" AcceptsReturn="True" TextWrapping="Wrap" IsReadOnly="True"/>
         </ScrollViewer>
@@ -117,7 +117,7 @@
             <Button Name="DownloadButton" MinWidth="160" MaxWidth="200">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <PathIcon Data="{StaticResource DownloadIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="DownloadButtonText" Text="Herunterladen" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock Name="DownloadButtonText" Text="Download" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
@@ -125,7 +125,7 @@
             <Button Name="CancelButton" MinWidth="120" MaxWidth="160">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <PathIcon Data="{StaticResource CancelIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="CancelButtonText" Text="Abbrechen" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock Name="CancelButtonText" Text="Cancel" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
@@ -133,7 +133,7 @@
             <Button Name="ClearLogsButton" MinWidth="140" MaxWidth="180">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <PathIcon Data="{StaticResource TrashIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="ClearLogsButtonText" Text="Logs leeren" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock Name="ClearLogsButtonText" Text="Clear Logs" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
@@ -141,7 +141,7 @@
             <Button Name="SettingsButton" MinWidth="140" MaxWidth="180">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <PathIcon Data="{StaticResource SettingsIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="SettingsButtonText" Text="Einstellungen" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <TextBlock Name="SettingsButtonText" Text="Settings" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
         </StackPanel>
