@@ -9,9 +9,10 @@
     <RootNamespace>realsnag_media_downloader</RootNamespace>
     <ApplicationTitle>realsnag-media-downloader</ApplicationTitle>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>1.1.0</Version>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.1</Version>
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
+    <FileVersion>1.1.1.0</FileVersion>
+    <ApplicationIcon>Installer\realsnag-media-downloader.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,10 +28,13 @@
     </PackageReference>
   </ItemGroup>
 
+
   <!-- Include bundled tools in build output -->
   <ItemGroup>
     <None Include="Tools\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+
 </Project>

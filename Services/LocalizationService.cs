@@ -58,7 +58,7 @@ public class LocalizationService
                 ["Downloading"] = "Lädt herunter...",
                 ["Complete"] = "Abgeschlossen",
                 ["Error"] = "Fehler",
-                ["Logs"] = "Protokolle:",
+                ["Logs"] = "Logs:",
                 ["Download"] = "Herunterladen",
                 ["Cancel"] = "Abbrechen",
                 ["ClearLogs"] = "Logs leeren",
