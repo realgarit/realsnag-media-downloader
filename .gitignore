@@ -30,3 +30,7 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# Release packages
+*.zip
+publish/
