@@ -9,6 +9,11 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Markup.Xaml;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia;
+using realsnag_media_downloader.Services;
+using System.Reflection;
 
 namespace realsnag_media_downloader;
 
@@ -24,6 +29,7 @@ public partial class MainWindow : Window
         var downloadButton = this.FindControl<Button>("DownloadButton");
         var clearLogsButton = this.FindControl<Button>("ClearLogsButton");
         var cancelButton = this.FindControl<Button>("CancelButton");
+        var settingsButton = this.FindControl<Button>("SettingsButton");
 
         if (downloadButton != null)
         {
@@ -46,6 +52,237 @@ public partial class MainWindow : Window
         {
             cancelButton.Click += OnCancelButtonClick;
         }
+
+        if (settingsButton != null)
+        {
+            settingsButton.Click += OnSettingsButtonClick;
+        }
+
+        // Subscribe to language changes
+        LocalizationService.Instance.LanguageChanged += OnLanguageChanged;
+        SettingsService.Instance.ThemeChanged += OnThemeChanged;
+        
+        // Initialize UI text with current language
+        UpdateUIText();
+        
+        // Set version number
+        SetVersionNumber();
+    }
+
+    private void OnSettingsButtonClick(object? sender, RoutedEventArgs e)
+    {
+        // Create a modern settings window that adapts to theme
+        var settingsWindow = new Window
+        {
+            Title = "Einstellungen",
+            Width = 350,
+            Height = 250,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        var mainPanel = new StackPanel 
+        { 
+            Margin = new Thickness(25), 
+            Spacing = 20
+        };
+
+        // Theme section
+        var themeGroup = new StackPanel { Spacing = 10 };
+        var themeLabel = new TextBlock 
+        { 
+            Text = "Design", 
+            FontWeight = FontWeight.Bold,
+            FontSize = 16
+        };
+        
+        var themePanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 15 };
+        
+        var darkRadio = new RadioButton 
+        { 
+            Content = "Dunkel", 
+            IsChecked = SettingsService.Instance.IsDarkTheme
+        };
+        var lightRadio = new RadioButton 
+        { 
+            Content = "Hell", 
+            IsChecked = !SettingsService.Instance.IsDarkTheme
+        };
+        
+        darkRadio.IsCheckedChanged += (s, args) => 
+        { 
+            if (darkRadio.IsChecked == true) 
+            {
+                SettingsService.Instance.IsDarkTheme = true;
+                // Apply theme immediately
+                if (Application.Current != null)
+                {
+                    Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
+                }
+            }
+        };
+        
+        lightRadio.IsCheckedChanged += (s, args) => 
+        { 
+            if (lightRadio.IsChecked == true) 
+            {
+                SettingsService.Instance.IsDarkTheme = false;
+                // Apply theme immediately
+                if (Application.Current != null)
+                {
+                    Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
+                }
+            }
+        };
+        
+        themePanel.Children.Add(darkRadio);
+        themePanel.Children.Add(lightRadio);
+        themeGroup.Children.Add(themeLabel);
+        themeGroup.Children.Add(themePanel);
+
+        // Language section
+        var langGroup = new StackPanel { Spacing = 10 };
+        var langLabel = new TextBlock 
+        { 
+            Text = "Sprache", 
+            FontWeight = FontWeight.Bold,
+            FontSize = 16
+        };
+        
+        var langPanel = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 15 };
+        
+        var germanRadio = new RadioButton 
+        { 
+            Content = "Deutsch", 
+            IsChecked = LocalizationService.Instance.CurrentLanguage == "de"
+        };
+        var englishRadio = new RadioButton 
+        { 
+            Content = "English", 
+            IsChecked = LocalizationService.Instance.CurrentLanguage == "en"
+        };
+        
+        germanRadio.IsCheckedChanged += (s, args) => 
+        { 
+            if (germanRadio.IsChecked == true) 
+            {
+                LocalizationService.Instance.CurrentLanguage = "de";
+                // Update settings dialog text immediately
+                settingsWindow.Title = LocalizationService.Instance.GetString("Settings");
+                themeLabel.Text = LocalizationService.Instance.GetString("Theme");
+                langLabel.Text = LocalizationService.Instance.GetString("Language");
+                darkRadio.Content = LocalizationService.Instance.GetString("DarkTheme");
+                lightRadio.Content = LocalizationService.Instance.GetString("LightTheme");
+                germanRadio.Content = LocalizationService.Instance.GetString("German");
+                englishRadio.Content = LocalizationService.Instance.GetString("English");
+            }
+        };
+        
+        englishRadio.IsCheckedChanged += (s, args) => 
+        { 
+            if (englishRadio.IsChecked == true) 
+            {
+                LocalizationService.Instance.CurrentLanguage = "en";
+                // Update settings dialog text immediately
+                settingsWindow.Title = LocalizationService.Instance.GetString("Settings");
+                themeLabel.Text = LocalizationService.Instance.GetString("Theme");
+                langLabel.Text = LocalizationService.Instance.GetString("Language");
+                darkRadio.Content = LocalizationService.Instance.GetString("DarkTheme");
+                lightRadio.Content = LocalizationService.Instance.GetString("LightTheme");
+                germanRadio.Content = LocalizationService.Instance.GetString("German");
+                englishRadio.Content = LocalizationService.Instance.GetString("English");
+            }
+        };
+        
+        langPanel.Children.Add(germanRadio);
+        langPanel.Children.Add(englishRadio);
+        langGroup.Children.Add(langLabel);
+        langGroup.Children.Add(langPanel);
+
+        mainPanel.Children.Add(themeGroup);
+        mainPanel.Children.Add(langGroup);
+
+        settingsWindow.Content = mainPanel;
+        settingsWindow.ShowDialog(this);
+    }
+
+    private void OnLanguageChanged(object? sender, LanguageChangedEventArgs e)
+    {
+        // Update all UI text when language changes
+        UpdateUIText();
+    }
+
+    private void UpdateUIText()
+    {
+        var loc = LocalizationService.Instance;
+        
+        // Update window title
+        this.Title = loc.GetString("AppTitle");
+        
+        // Update main UI elements
+        var linkLabel = this.FindControl<TextBlock>("LinkLabel");
+        if (linkLabel != null) linkLabel.Text = loc.GetString("EnterLink");
+        
+        var metadataText = this.FindControl<TextBlock>("MetadataTextBlock");
+        if (metadataText != null) metadataText.Text = loc.GetString("MediaMetadata");
+        
+        var formatLabel = this.FindControl<TextBlock>("FormatLabel");
+        if (formatLabel != null) formatLabel.Text = loc.GetString("SelectFormat");
+        
+        var statusTextLabel = this.FindControl<TextBlock>("StatusTextLabel");
+        if (statusTextLabel != null) statusTextLabel.Text = loc.GetString("Status");
+        
+        var statusLabel = this.FindControl<TextBlock>("StatusLabel");
+        if (statusLabel != null && statusLabel.Text == "Bereit") 
+        {
+            statusLabel.Text = loc.GetString("Idle");
+        }
+        
+        var logsLabel = this.FindControl<TextBlock>("LogsLabel");
+        if (logsLabel != null) logsLabel.Text = loc.GetString("Logs");
+        
+        // Update button text
+        var downloadButtonText = this.FindControl<TextBlock>("DownloadButtonText");
+        if (downloadButtonText != null) downloadButtonText.Text = loc.GetString("Download");
+        
+        var cancelButtonText = this.FindControl<TextBlock>("CancelButtonText");
+        if (cancelButtonText != null) cancelButtonText.Text = loc.GetString("Cancel");
+        
+        var clearLogsButtonText = this.FindControl<TextBlock>("ClearLogsButtonText");
+        if (clearLogsButtonText != null) clearLogsButtonText.Text = loc.GetString("ClearLogs");
+        
+        var settingsButtonText = this.FindControl<TextBlock>("SettingsButtonText");
+        if (settingsButtonText != null) settingsButtonText.Text = loc.GetString("Settings");
+    }
+
+    private void SetVersionNumber()
+    {
+        try
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            if (version != null)
+            {
+                var versionString = $"v{version.Major}.{version.Minor}.{version.Build}";
+                var versionLabel = this.FindControl<TextBlock>("VersionLabel");
+                if (versionLabel != null)
+                {
+                    versionLabel.Text = versionString;
+                }
+            }
+        }
+        catch
+        {
+            // Fallback to hardcoded version if assembly version fails
+            var versionLabel = this.FindControl<TextBlock>("VersionLabel");
+            if (versionLabel != null)
+            {
+                versionLabel.Text = "v1.1.0";
+            }
+        }
+    }
+
+    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
+    {
+        // Theme changes are handled automatically by Avalonia
     }
 
     private async void OnLinkTextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
@@ -82,7 +319,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            metadataTextBlock.Text = $"Error fetching metadata: {ex.Message}";
+            metadataTextBlock.Text = $"{LocalizationService.Instance.GetString("ErrorFetchingMetadata")} {ex.Message}";
         }
     }
 
@@ -128,7 +365,7 @@ public partial class MainWindow : Window
         var link = linkTextBox.Text;
         if (string.IsNullOrWhiteSpace(link))
         {
-            AppendLog(logsBox, "Error: Please enter a valid media link.");
+            AppendLog(logsBox, LocalizationService.Instance.GetString("ErrorValidLink"));
             return;
         }
 
@@ -140,18 +377,18 @@ public partial class MainWindow : Window
         try
         {
             downloadButton.IsEnabled = false;
-            statusLabel.Text = "Downloading...";
+            statusLabel.Text = LocalizationService.Instance.GetString("Downloading");
             progressBar.IsVisible = true;
             progressBar.Value = 0;
 
             await RunMediaDownloader(link, format, outputPath, logsBox, progressBar);
 
-            statusLabel.Text = "Complete";
+            statusLabel.Text = LocalizationService.Instance.GetString("Complete");
         }
         catch (Exception ex)
         {
             AppendLog(logsBox, $"Error: {ex.Message}");
-            statusLabel.Text = "Error";
+            statusLabel.Text = LocalizationService.Instance.GetString("Error");
         }
         finally
         {
@@ -217,11 +454,11 @@ public partial class MainWindow : Window
         }
         catch (OperationCanceledException)
         {
-            AppendLog(logsBox, "Download operation was cancelled.");
+            AppendLog(logsBox, LocalizationService.Instance.GetString("DownloadCancelledError"));
         }
         catch (Exception ex)
         {
-            AppendLog(logsBox, $"Error during download: {ex.Message}");
+            AppendLog(logsBox, $"{LocalizationService.Instance.GetString("ErrorDuringDownload")} {ex.Message}");
         }
         finally
         {
@@ -251,7 +488,7 @@ public partial class MainWindow : Window
 
                 if (logsBox != null)
                 {
-                    AppendLog(logsBox, "Download cancelled by user.");
+                    AppendLog(logsBox, LocalizationService.Instance.GetString("DownloadCancelled"));
                 }
                 else
                 {
@@ -283,7 +520,7 @@ public partial class MainWindow : Window
         {
             if (logsBox != null)
             {
-                AppendLog(logsBox, "No active download to cancel.");
+                AppendLog(logsBox, LocalizationService.Instance.GetString("NoActiveDownload"));
             }
             else
             {
@@ -318,6 +555,39 @@ public partial class MainWindow : Window
 
     private string GetMediaDownloaderToolName()
     {
+        // First, try to use the bundled yt-dlp
+        var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tools", "yt-dlp.exe");
+        if (File.Exists(bundledPath))
+        {
+            try
+            {
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = bundledPath,
+                    Arguments = "--version",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (var process = Process.Start(processStartInfo))
+                {
+                    if (process != null)
+                    {
+                        process.WaitForExit(2000); // Wait max 2 seconds
+                        if (process.ExitCode == 0)
+                        {
+                            return bundledPath;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Continue to PATH search
+            }
+        }
+
         // Try to find the media downloader tool in PATH
         var possibleNames = new[] { "yt-dlp", "youtube-dl", "media-downloader" };
         
@@ -352,13 +622,46 @@ public partial class MainWindow : Window
             }
         }
 
-        // Default fallback
-        return "yt-dlp";
+        // Default fallback to bundled tool
+        return bundledPath;
     }
 
     private string GetFFmpegPath()
     {
-        // Try to find ffmpeg using Python imageio_ffmpeg first
+        // First, try to use the bundled ffmpeg
+        var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tools", "ffmpeg", "ffmpeg.exe");
+        if (File.Exists(bundledPath))
+        {
+            try
+            {
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = bundledPath,
+                    Arguments = "-version",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using (var process = Process.Start(processStartInfo))
+                {
+                    if (process != null)
+                    {
+                        process.WaitForExit(2000);
+                        if (process.ExitCode == 0)
+                        {
+                            return bundledPath;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Continue to other methods
+            }
+        }
+
+        // Try to find ffmpeg using Python imageio_ffmpeg
         try
         {
             var pythonStartInfo = new ProcessStartInfo
@@ -453,7 +756,7 @@ public partial class MainWindow : Window
             }
         }
 
-        // If nothing found, return a default that will likely fail gracefully
-        return "ffmpeg";
+        // If nothing found, return bundled path as fallback
+        return bundledPath;
     }
 }

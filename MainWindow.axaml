@@ -1,5 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:services="using:realsnag_media_downloader.Services"
+        xmlns:controls="using:realsnag_media_downloader.Controls"
         x:Class="realsnag_media_downloader.MainWindow"
         Title="RealSnag Media Downloader"
         Width="700"
@@ -21,58 +23,90 @@
     <StreamGeometry x:Key="CancelIconGeometry">
         M3.52499419,3.71761187 L3.61611652,3.61611652 C4.0717282,3.16050485 4.79154862,3.13013074 5.28238813,3.52499419 L5.38388348,3.61611652 L14,12.233 L22.6161165,3.61611652 C23.1042719,3.12796116 23.8957281,3.12796116 24.3838835,3.61611652 C24.8720388,4.10427189 24.8720388,4.89572811 24.3838835,5.38388348 L15.767,14 L24.3838835,22.6161165 C24.8394952,23.0717282 24.8698693,23.7915486 24.4750058,24.2823881 L24.3838835,24.3838835 C23.9282718,24.8394952 23.2084514,24.8698693 22.7176119,24.4750058 L22.6161165,24.3838835 L14,15.767 L5.38388348,24.3838835 C4.89572811,24.8720388 4.10427189,24.8720388 3.61611652,24.3838835 C3.12796116,23.8957281 3.12796116,23.1042719 3.61611652,22.6161165 L12.233,14 L3.61611652,5.38388348 C3.16050485,4.9282718 3.13013074,4.20845138 3.52499419,3.71761187 L3.61611652,3.61611652 L3.52499419,3.71761187 Z
     </StreamGeometry>
+
+    <!-- Settings Icon Geometry -->
+    <StreamGeometry x:Key="SettingsIconGeometry">
+        M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z
+    </StreamGeometry>
 </Window.Resources>
 
     <Window.Styles>
-        <!-- Default Button Style -->
+        <!-- Modern Button Style -->
         <Style Selector="Button">
-            <Setter Property="Background" Value="#2196F3"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Height" Value="40"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="4"/>
         </Style>
 
         <!-- Button Hover State -->
         <Style Selector="Button:pointerover">
-            <Setter Property="Background" Value="#1976D2"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
+            <Setter Property="Opacity" Value="0.8"/>
         </Style>
 
         <!-- Button Pressed State -->
         <Style Selector="Button:pressed">
-            <Setter Property="Background" Value="#0D47A1"/>
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
+            <Setter Property="Opacity" Value="0.6"/>
+        </Style>
+
+        <!-- Settings Button Special Style -->
+        <Style Selector="Button#SettingsButton">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Style>
+
+        <Style Selector="Button#SettingsButton:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
+            <Setter Property="Opacity" Value="0.8"/>
         </Style>
     </Window.Styles>
 
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *, Auto" Margin="10">
-        <!-- Input Section -->
-        <TextBlock Text="Enter Link:" Grid.Row="0" Margin="5"/>
-        <TextBox Name="LinkTextBox" Grid.Row="1" Width="650" HorizontalAlignment="Left" Margin="5" TextChanged="OnLinkTextChanged"/>
+        <!-- Header with Version and Copyright -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+            <TextBlock Name="LinkLabel" Text="Link eingeben:" Grid.Column="0" Margin="5"/>
+            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" Margin="5">
+                <TextBlock Name="VersionLabel" Text="v1.1.0" 
+                          FontSize="12" Opacity="0.7" HorizontalAlignment="Right"/>
+                <TextBlock Text="© 2025 Realgar. MIT License." 
+                          FontSize="10" Opacity="0.5" HorizontalAlignment="Right"/>
+            </StackPanel>
+        </Grid>
+        <TextBox Name="LinkTextBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5" TextChanged="OnLinkTextChanged"/>
 
         <!-- Video Preview -->
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="5">
-            <Image Name="ThumbnailImage" Width="150" Height="150" Margin="5"/>
-            <TextBlock Name="MetadataTextBlock" Text="Media metadata will appear here after you paste the link" Margin="10" VerticalAlignment="Top" Width="480"/>
-        </StackPanel>
+        <Grid Grid.Row="2" Margin="5" ColumnDefinitions="Auto, *">
+            <Image Name="ThumbnailImage" Width="150" Height="150" Margin="5" Grid.Column="0"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Column="1" Margin="10">
+                <TextBlock Name="MetadataTextBlock" Text="Medien-Metadaten werden hier angezeigt, nachdem Sie den Link eingefügt haben" 
+                          TextWrapping="Wrap" VerticalAlignment="Top"/>
+            </ScrollViewer>
+        </Grid>
 
         <!-- Format Selection -->
         <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="5,10,0,0">
-            <TextBlock Text="Select Format:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBlock Name="FormatLabel" Text="Format wählen:" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <RadioButton Name="Mp4RadioButton" Content="MP4" IsChecked="True" Margin="10,0"/>
             <RadioButton Name="Mp3RadioButton" Content="MP3" Margin="10,0"/>
         </StackPanel>
 
         <!-- Status and Progress -->
-        <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="5,10,0,0">
-            <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <TextBlock Name="StatusLabel" Text="Idle" VerticalAlignment="Center"/>
-            <ProgressBar Name="ProgressBar" Width="400" Height="20" IsVisible="False" Margin="20,0,0,0"/>
-        </StackPanel>
+        <Grid Grid.Row="4" Margin="5,10,0,0" ColumnDefinitions="Auto, Auto, *">
+            <TextBlock Name="StatusTextLabel" Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0" Grid.Column="0"/>
+            <TextBlock Name="StatusLabel" Text="Bereit" VerticalAlignment="Center" Grid.Column="1"/>
+            <ProgressBar Name="ProgressBar" Height="20" IsVisible="False" Margin="20,0,0,0" Grid.Column="2"/>
+        </Grid>
 
         <!-- Logs -->
-        <TextBlock Text="Logs:" Grid.Row="5" Margin="5,0,0,0"/>
+        <TextBlock Name="LogsLabel" Text="Protokolle:" Grid.Row="5" Margin="5,0,0,0"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="6" Margin="5">
             <TextBox Name="LogsTextBox" AcceptsReturn="True" TextWrapping="Wrap" IsReadOnly="True"/>
         </ScrollViewer>
@@ -80,28 +114,37 @@
         <!-- Buttons -->
         <StackPanel Orientation="Horizontal" Grid.Row="7" HorizontalAlignment="Center" Margin="10">
             <!-- Download Button -->
-            <Button Name="DownloadButton" Width="140" Margin="5" Background="{DynamicResource SystemControlBackgroundAccentBrush}">
+            <Button Name="DownloadButton" MinWidth="160" MaxWidth="200">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource DownloadIconGeometry}" Width="20" Height="20" Margin="0,0,5,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-                    <TextBlock Text="Download" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                    <PathIcon Data="{StaticResource DownloadIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
+                    <TextBlock Name="DownloadButtonText" Text="Herunterladen" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
             <!-- Cancel Button -->
-            <Button Name="CancelButton" Width="140" Margin="5" Background="{DynamicResource SystemControlBackgroundAccentBrush}">
+            <Button Name="CancelButton" MinWidth="120" MaxWidth="160">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource CancelIconGeometry}" Width="20" Height="20" Margin="0,0,5,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-                    <TextBlock Text="Cancel" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                    <PathIcon Data="{StaticResource CancelIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
+                    <TextBlock Name="CancelButtonText" Text="Abbrechen" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
 
             <!-- Clear Logs Button -->
-            <Button Name="ClearLogsButton" Width="140" Margin="5" Background="{DynamicResource SystemControlBackgroundAccentBrush}">
+            <Button Name="ClearLogsButton" MinWidth="140" MaxWidth="180">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource TrashIconGeometry}" Width="20" Height="20" Margin="0,0,5,0" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-                    <TextBlock Text="Clear Logs" VerticalAlignment="Center" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                    <PathIcon Data="{StaticResource TrashIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
+                    <TextBlock Name="ClearLogsButtonText" Text="Logs leeren" TextWrapping="Wrap" TextAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Settings Button -->
+            <Button Name="SettingsButton" MinWidth="140" MaxWidth="180">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <PathIcon Data="{StaticResource SettingsIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
+                    <TextBlock Name="SettingsButtonText" Text="Einstellungen" TextWrapping="Wrap" TextAlignment="Center"/>
                 </StackPanel>
             </Button>
         </StackPanel>
     </Grid>
+
 </Window>
