@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+    <Package Name="RealSnag Media Downloader"
+             Manufacturer="Realgar"
+             Version="1.1.1"
+           UpgradeCode="12345678-1234-1234-1234-123456789ABC"
+           Language="1033" 
+           Codepage="1252" 
+           Compressed="yes">
+
+    <!-- Product Icon for Apps & Features -->
+    <Icon Id="ProductIcon" SourceFile="$(var.SourceDir)\realsnag-media-downloader.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+
+    <!-- Product Information -->
+    <Property Id="ARPHELPLINK" Value="https://github.com/realgarit/realsnag-media-downloader" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/realgarit/realsnag-media-downloader" />
+    <Property Id="ARPCONTACT" Value="github@realgar.ch" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/realgarit/realsnag-media-downloader/releases" />
+    <Property Id="ARPNOREPAIR" Value="1" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <!-- Installation Directory -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+
+    
+
+    <!-- Media -->
+    <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+    <!-- Features -->
+    <Feature Id="ProductFeature" Title="RealSnag Media Downloader" Level="1" Description="Main application files">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+
+    <!-- Standard Directories -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="RealSnag Media Downloader">
+        <Directory Id="ToolsDir" Name="Tools">
+          <Directory Id="FfmpegDir" Name="ffmpeg" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+    
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ProgramMenuDir" Name="RealSnag Media Downloader" />
+    </StandardDirectory>
+    
+    <StandardDirectory Id="DesktopFolder" />
+
+    <!-- Components -->
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- Main Application Files -->
+      <Component Id="MainExecutable" Guid="11111111-2222-3333-4444-444444444444">
+        <File Id="MainExe" Name="realsnag-media-downloader.exe" Source="$(var.SourceDir)\realsnag-media-downloader.exe" KeyPath="yes" />
+        <File Id="MainDll" Name="realsnag-media-downloader.dll" Source="$(var.SourceDir)\realsnag-media-downloader.dll" />
+        <File Id="MainPdb" Name="realsnag-media-downloader.pdb" Source="$(var.SourceDir)\realsnag-media-downloader.pdb" />
+        <File Id="RuntimeConfig" Name="realsnag-media-downloader.runtimeconfig.json" Source="$(var.SourceDir)\realsnag-media-downloader.runtimeconfig.json" />
+        <File Id="DepsJson" Name="realsnag-media-downloader.deps.json" Source="$(var.SourceDir)\realsnag-media-downloader.deps.json" />
+      </Component>
+
+      <!-- .NET Runtime Files -->
+      <Component Id="DotNetRuntime" Guid="22222222-3333-4444-5555-555555555555">
+        <File Id="CoreClr" Name="coreclr.dll" Source="$(var.SourceDir)\coreclr.dll" />
+        <File Id="Mscorlib" Name="mscorlib.dll" Source="$(var.SourceDir)\mscorlib.dll" />
+        <File Id="SystemPrivateCoreLib" Name="System.Private.CoreLib.dll" Source="$(var.SourceDir)\System.Private.CoreLib.dll" />
+        <File Id="HostFxr" Name="hostfxr.dll" Source="$(var.SourceDir)\hostfxr.dll" />
+        <File Id="HostPolicy" Name="hostpolicy.dll" Source="$(var.SourceDir)\hostpolicy.dll" />
+        <File Id="ClrJit" Name="clrjit.dll" Source="$(var.SourceDir)\clrjit.dll" />
+        <File Id="ClrGc" Name="clrgc.dll" Source="$(var.SourceDir)\clrgc.dll" />
+        <File Id="ClrGcExp" Name="clrgcexp.dll" Source="$(var.SourceDir)\clrgcexp.dll" />
+        <File Id="ClrEtWrc" Name="clretwrc.dll" Source="$(var.SourceDir)\clretwrc.dll" />
+        <File Id="Mscorrc" Name="mscorrc.dll" Source="$(var.SourceDir)\mscorrc.dll" />
+        <File Id="Createdump" Name="createdump.exe" Source="$(var.SourceDir)\createdump.exe" />
+      </Component>
+
+      <!-- System Libraries -->
+      <Component Id="SystemLibraries" Guid="77777777-8888-9999-AAAA-AAAAAAAAAAAA">
+        <File Id="SystemDll" Name="System.dll" Source="$(var.SourceDir)\System.dll" />
+        <File Id="SystemCore" Name="System.Core.dll" Source="$(var.SourceDir)\System.Core.dll" />
+        <File Id="SystemPrivateXml" Name="System.Private.Xml.dll" Source="$(var.SourceDir)\System.Private.Xml.dll" />
+        <File Id="SystemPrivateUri" Name="System.Private.Uri.dll" Source="$(var.SourceDir)\System.Private.Uri.dll" />
+        <File Id="SystemPrivateDataContractSerialization" Name="System.Private.DataContractSerialization.dll" Source="$(var.SourceDir)\System.Private.DataContractSerialization.dll" />
+        <File Id="SystemPrivateXmlLinq" Name="System.Private.Xml.Linq.dll" Source="$(var.SourceDir)\System.Private.Xml.Linq.dll" />
+        <File Id="NetStandard" Name="netstandard.dll" Source="$(var.SourceDir)\netstandard.dll" />
+        <File Id="MicrosoftCSharp" Name="Microsoft.CSharp.dll" Source="$(var.SourceDir)\Microsoft.CSharp.dll" />
+        <File Id="MicrosoftVisualBasicCore" Name="Microsoft.VisualBasic.Core.dll" Source="$(var.SourceDir)\Microsoft.VisualBasic.Core.dll" />
+        <File Id="MicrosoftVisualBasic" Name="Microsoft.VisualBasic.dll" Source="$(var.SourceDir)\Microsoft.VisualBasic.dll" />
+      </Component>
+
+      <!-- System.Runtime Libraries -->
+      <Component Id="SystemRuntimeLibraries" Guid="BBBBBBBB-CCCC-DDDD-EEEE-EEEEEEEEEEEE">
+        <File Id="SystemRuntime" Name="System.Runtime.dll" Source="$(var.SourceDir)\System.Runtime.dll" />
+        <File Id="SystemRuntimeExtensions" Name="System.Runtime.Extensions.dll" Source="$(var.SourceDir)\System.Runtime.Extensions.dll" />
+        <File Id="SystemRuntimeHandles" Name="System.Runtime.Handles.dll" Source="$(var.SourceDir)\System.Runtime.Handles.dll" />
+        <File Id="SystemRuntimeInteropServices" Name="System.Runtime.InteropServices.dll" Source="$(var.SourceDir)\System.Runtime.InteropServices.dll" />
+        <File Id="SystemRuntimeInteropServicesJavaScript" Name="System.Runtime.InteropServices.JavaScript.dll" Source="$(var.SourceDir)\System.Runtime.InteropServices.JavaScript.dll" />
+        <File Id="SystemRuntimeInteropServicesRuntimeInformation" Name="System.Runtime.InteropServices.RuntimeInformation.dll" Source="$(var.SourceDir)\System.Runtime.InteropServices.RuntimeInformation.dll" />
+        <File Id="SystemRuntimeIntrinsics" Name="System.Runtime.Intrinsics.dll" Source="$(var.SourceDir)\System.Runtime.Intrinsics.dll" />
+        <File Id="SystemRuntimeLoader" Name="System.Runtime.Loader.dll" Source="$(var.SourceDir)\System.Runtime.Loader.dll" />
+        <File Id="SystemRuntimeNumerics" Name="System.Runtime.Numerics.dll" Source="$(var.SourceDir)\System.Runtime.Numerics.dll" />
+        <File Id="SystemRuntimeSerialization" Name="System.Runtime.Serialization.dll" Source="$(var.SourceDir)\System.Runtime.Serialization.dll" />
+        <File Id="SystemRuntimeSerializationFormatters" Name="System.Runtime.Serialization.Formatters.dll" Source="$(var.SourceDir)\System.Runtime.Serialization.Formatters.dll" />
+        <File Id="SystemRuntimeSerializationJson" Name="System.Runtime.Serialization.Json.dll" Source="$(var.SourceDir)\System.Runtime.Serialization.Json.dll" />
+        <File Id="SystemRuntimeSerializationPrimitives" Name="System.Runtime.Serialization.Primitives.dll" Source="$(var.SourceDir)\System.Runtime.Serialization.Primitives.dll" />
+        <File Id="SystemRuntimeSerializationXml" Name="System.Runtime.Serialization.Xml.dll" Source="$(var.SourceDir)\System.Runtime.Serialization.Xml.dll" />
+        <File Id="SystemRuntimeCompilerServicesUnsafe" Name="System.Runtime.CompilerServices.Unsafe.dll" Source="$(var.SourceDir)\System.Runtime.CompilerServices.Unsafe.dll" />
+        <File Id="SystemRuntimeCompilerServicesVisualC" Name="System.Runtime.CompilerServices.VisualC.dll" Source="$(var.SourceDir)\System.Runtime.CompilerServices.VisualC.dll" />
+      </Component>
+
+      <!-- Additional System Libraries -->
+      <Component Id="AdditionalSystemLibraries" Guid="CCCCCCCC-DDDD-EEEE-FFFF-FFFFFFFFFFFF">
+        <File Id="SystemAppContext" Name="System.AppContext.dll" Source="$(var.SourceDir)\System.AppContext.dll" />
+        <File Id="SystemBuffers" Name="System.Buffers.dll" Source="$(var.SourceDir)\System.Buffers.dll" />
+        <File Id="SystemCollections" Name="System.Collections.dll" Source="$(var.SourceDir)\System.Collections.dll" />
+        <File Id="SystemCollectionsConcurrent" Name="System.Collections.Concurrent.dll" Source="$(var.SourceDir)\System.Collections.Concurrent.dll" />
+        <File Id="SystemCollectionsImmutable" Name="System.Collections.Immutable.dll" Source="$(var.SourceDir)\System.Collections.Immutable.dll" />
+        <File Id="SystemCollectionsNonGeneric" Name="System.Collections.NonGeneric.dll" Source="$(var.SourceDir)\System.Collections.NonGeneric.dll" />
+        <File Id="SystemCollectionsSpecialized" Name="System.Collections.Specialized.dll" Source="$(var.SourceDir)\System.Collections.Specialized.dll" />
+        <File Id="SystemComponentModel" Name="System.ComponentModel.dll" Source="$(var.SourceDir)\System.ComponentModel.dll" />
+        <File Id="SystemComponentModelAnnotations" Name="System.ComponentModel.Annotations.dll" Source="$(var.SourceDir)\System.ComponentModel.Annotations.dll" />
+        <File Id="SystemComponentModelDataAnnotations" Name="System.ComponentModel.DataAnnotations.dll" Source="$(var.SourceDir)\System.ComponentModel.DataAnnotations.dll" />
+        <File Id="SystemComponentModelEventBasedAsync" Name="System.ComponentModel.EventBasedAsync.dll" Source="$(var.SourceDir)\System.ComponentModel.EventBasedAsync.dll" />
+        <File Id="SystemComponentModelPrimitives" Name="System.ComponentModel.Primitives.dll" Source="$(var.SourceDir)\System.ComponentModel.Primitives.dll" />
+        <File Id="SystemComponentModelTypeConverter" Name="System.ComponentModel.TypeConverter.dll" Source="$(var.SourceDir)\System.ComponentModel.TypeConverter.dll" />
+        <File Id="SystemConfiguration" Name="System.Configuration.dll" Source="$(var.SourceDir)\System.Configuration.dll" />
+        <File Id="SystemConsole" Name="System.Console.dll" Source="$(var.SourceDir)\System.Console.dll" />
+        <File Id="SystemDataCommon" Name="System.Data.Common.dll" Source="$(var.SourceDir)\System.Data.Common.dll" />
+        <File Id="SystemDataSetExtensions" Name="System.Data.DataSetExtensions.dll" Source="$(var.SourceDir)\System.Data.DataSetExtensions.dll" />
+        <File Id="SystemData" Name="System.Data.dll" Source="$(var.SourceDir)\System.Data.dll" />
+        <File Id="SystemDiagnosticsContracts" Name="System.Diagnostics.Contracts.dll" Source="$(var.SourceDir)\System.Diagnostics.Contracts.dll" />
+        <File Id="SystemDiagnosticsDebug" Name="System.Diagnostics.Debug.dll" Source="$(var.SourceDir)\System.Diagnostics.Debug.dll" />
+        <File Id="SystemDiagnosticsDiagnosticSource" Name="System.Diagnostics.DiagnosticSource.dll" Source="$(var.SourceDir)\System.Diagnostics.DiagnosticSource.dll" />
+        <File Id="SystemDiagnosticsFileVersionInfo" Name="System.Diagnostics.FileVersionInfo.dll" Source="$(var.SourceDir)\System.Diagnostics.FileVersionInfo.dll" />
+        <File Id="SystemDiagnosticsProcess" Name="System.Diagnostics.Process.dll" Source="$(var.SourceDir)\System.Diagnostics.Process.dll" />
+        <File Id="SystemDiagnosticsStackTrace" Name="System.Diagnostics.StackTrace.dll" Source="$(var.SourceDir)\System.Diagnostics.StackTrace.dll" />
+        <File Id="SystemDiagnosticsTextWriterTraceListener" Name="System.Diagnostics.TextWriterTraceListener.dll" Source="$(var.SourceDir)\System.Diagnostics.TextWriterTraceListener.dll" />
+        <File Id="SystemDiagnosticsTools" Name="System.Diagnostics.Tools.dll" Source="$(var.SourceDir)\System.Diagnostics.Tools.dll" />
+        <File Id="SystemDiagnosticsTraceSource" Name="System.Diagnostics.TraceSource.dll" Source="$(var.SourceDir)\System.Diagnostics.TraceSource.dll" />
+        <File Id="SystemDiagnosticsTracing" Name="System.Diagnostics.Tracing.dll" Source="$(var.SourceDir)\System.Diagnostics.Tracing.dll" />
+        <File Id="SystemDrawing" Name="System.Drawing.dll" Source="$(var.SourceDir)\System.Drawing.dll" />
+        <File Id="SystemDrawingPrimitives" Name="System.Drawing.Primitives.dll" Source="$(var.SourceDir)\System.Drawing.Primitives.dll" />
+        <File Id="SystemDynamicRuntime" Name="System.Dynamic.Runtime.dll" Source="$(var.SourceDir)\System.Dynamic.Runtime.dll" />
+        <File Id="SystemFormatsAsn1" Name="System.Formats.Asn1.dll" Source="$(var.SourceDir)\System.Formats.Asn1.dll" />
+        <File Id="SystemFormatsTar" Name="System.Formats.Tar.dll" Source="$(var.SourceDir)\System.Formats.Tar.dll" />
+        <File Id="SystemGlobalization" Name="System.Globalization.dll" Source="$(var.SourceDir)\System.Globalization.dll" />
+        <File Id="SystemGlobalizationCalendars" Name="System.Globalization.Calendars.dll" Source="$(var.SourceDir)\System.Globalization.Calendars.dll" />
+        <File Id="SystemGlobalizationExtensions" Name="System.Globalization.Extensions.dll" Source="$(var.SourceDir)\System.Globalization.Extensions.dll" />
+        <File Id="SystemIO" Name="System.IO.dll" Source="$(var.SourceDir)\System.IO.dll" />
+        <File Id="SystemIOCompression" Name="System.IO.Compression.dll" Source="$(var.SourceDir)\System.IO.Compression.dll" />
+        <File Id="SystemIOCompressionBrotli" Name="System.IO.Compression.Brotli.dll" Source="$(var.SourceDir)\System.IO.Compression.Brotli.dll" />
+        <File Id="SystemIOCompressionFileSystem" Name="System.IO.Compression.FileSystem.dll" Source="$(var.SourceDir)\System.IO.Compression.FileSystem.dll" />
+        <File Id="SystemIOCompressionNative" Name="System.IO.Compression.Native.dll" Source="$(var.SourceDir)\System.IO.Compression.Native.dll" />
+        <File Id="SystemIOCompressionZipFile" Name="System.IO.Compression.ZipFile.dll" Source="$(var.SourceDir)\System.IO.Compression.ZipFile.dll" />
+        <File Id="SystemIOFileSystem" Name="System.IO.FileSystem.dll" Source="$(var.SourceDir)\System.IO.FileSystem.dll" />
+        <File Id="SystemIOFileSystemAccessControl" Name="System.IO.FileSystem.AccessControl.dll" Source="$(var.SourceDir)\System.IO.FileSystem.AccessControl.dll" />
+        <File Id="SystemIOFileSystemDriveInfo" Name="System.IO.FileSystem.DriveInfo.dll" Source="$(var.SourceDir)\System.IO.FileSystem.DriveInfo.dll" />
+        <File Id="SystemIOFileSystemPrimitives" Name="System.IO.FileSystem.Primitives.dll" Source="$(var.SourceDir)\System.IO.FileSystem.Primitives.dll" />
+        <File Id="SystemIOFileSystemWatcher" Name="System.IO.FileSystem.Watcher.dll" Source="$(var.SourceDir)\System.IO.FileSystem.Watcher.dll" />
+        <File Id="SystemIOIsolatedStorage" Name="System.IO.IsolatedStorage.dll" Source="$(var.SourceDir)\System.IO.IsolatedStorage.dll" />
+        <File Id="SystemIOMemoryMappedFiles" Name="System.IO.MemoryMappedFiles.dll" Source="$(var.SourceDir)\System.IO.MemoryMappedFiles.dll" />
+        <File Id="SystemIOPipelines" Name="System.IO.Pipelines.dll" Source="$(var.SourceDir)\System.IO.Pipelines.dll" />
+        <File Id="SystemIOPipes" Name="System.IO.Pipes.dll" Source="$(var.SourceDir)\System.IO.Pipes.dll" />
+        <File Id="SystemIOPipesAccessControl" Name="System.IO.Pipes.AccessControl.dll" Source="$(var.SourceDir)\System.IO.Pipes.AccessControl.dll" />
+        <File Id="SystemIOUnmanagedMemoryStream" Name="System.IO.UnmanagedMemoryStream.dll" Source="$(var.SourceDir)\System.IO.UnmanagedMemoryStream.dll" />
+        <File Id="SystemLinq" Name="System.Linq.dll" Source="$(var.SourceDir)\System.Linq.dll" />
+        <File Id="SystemLinqExpressions" Name="System.Linq.Expressions.dll" Source="$(var.SourceDir)\System.Linq.Expressions.dll" />
+        <File Id="SystemLinqParallel" Name="System.Linq.Parallel.dll" Source="$(var.SourceDir)\System.Linq.Parallel.dll" />
+        <File Id="SystemLinqQueryable" Name="System.Linq.Queryable.dll" Source="$(var.SourceDir)\System.Linq.Queryable.dll" />
+        <File Id="SystemMemory" Name="System.Memory.dll" Source="$(var.SourceDir)\System.Memory.dll" />
+        <File Id="SystemNet" Name="System.Net.dll" Source="$(var.SourceDir)\System.Net.dll" />
+        <File Id="SystemNetHttp" Name="System.Net.Http.dll" Source="$(var.SourceDir)\System.Net.Http.dll" />
+        <File Id="SystemNetHttpJson" Name="System.Net.Http.Json.dll" Source="$(var.SourceDir)\System.Net.Http.Json.dll" />
+        <File Id="SystemNetHttpListener" Name="System.Net.HttpListener.dll" Source="$(var.SourceDir)\System.Net.HttpListener.dll" />
+        <File Id="SystemNetMail" Name="System.Net.Mail.dll" Source="$(var.SourceDir)\System.Net.Mail.dll" />
+        <File Id="SystemNetNameResolution" Name="System.Net.NameResolution.dll" Source="$(var.SourceDir)\System.Net.NameResolution.dll" />
+        <File Id="SystemNetNetworkInformation" Name="System.Net.NetworkInformation.dll" Source="$(var.SourceDir)\System.Net.NetworkInformation.dll" />
+        <File Id="SystemNetPing" Name="System.Net.Ping.dll" Source="$(var.SourceDir)\System.Net.Ping.dll" />
+        <File Id="SystemNetPrimitives" Name="System.Net.Primitives.dll" Source="$(var.SourceDir)\System.Net.Primitives.dll" />
+        <File Id="SystemNetQuic" Name="System.Net.Quic.dll" Source="$(var.SourceDir)\System.Net.Quic.dll" />
+        <File Id="SystemNetRequests" Name="System.Net.Requests.dll" Source="$(var.SourceDir)\System.Net.Requests.dll" />
+        <File Id="SystemNetSecurity" Name="System.Net.Security.dll" Source="$(var.SourceDir)\System.Net.Security.dll" />
+        <File Id="SystemNetServicePoint" Name="System.Net.ServicePoint.dll" Source="$(var.SourceDir)\System.Net.ServicePoint.dll" />
+        <File Id="SystemNetSockets" Name="System.Net.Sockets.dll" Source="$(var.SourceDir)\System.Net.Sockets.dll" />
+        <File Id="SystemNetWebClient" Name="System.Net.WebClient.dll" Source="$(var.SourceDir)\System.Net.WebClient.dll" />
+        <File Id="SystemNetWebHeaderCollection" Name="System.Net.WebHeaderCollection.dll" Source="$(var.SourceDir)\System.Net.WebHeaderCollection.dll" />
+        <File Id="SystemNetWebProxy" Name="System.Net.WebProxy.dll" Source="$(var.SourceDir)\System.Net.WebProxy.dll" />
+        <File Id="SystemNetWebSockets" Name="System.Net.WebSockets.dll" Source="$(var.SourceDir)\System.Net.WebSockets.dll" />
+        <File Id="SystemNetWebSocketsClient" Name="System.Net.WebSockets.Client.dll" Source="$(var.SourceDir)\System.Net.WebSockets.Client.dll" />
+        <File Id="SystemNumerics" Name="System.Numerics.dll" Source="$(var.SourceDir)\System.Numerics.dll" />
+        <File Id="SystemNumericsVectors" Name="System.Numerics.Vectors.dll" Source="$(var.SourceDir)\System.Numerics.Vectors.dll" />
+        <File Id="SystemObjectModel" Name="System.ObjectModel.dll" Source="$(var.SourceDir)\System.ObjectModel.dll" />
+        <File Id="SystemReflection" Name="System.Reflection.dll" Source="$(var.SourceDir)\System.Reflection.dll" />
+        <File Id="SystemReflectionDispatchProxy" Name="System.Reflection.DispatchProxy.dll" Source="$(var.SourceDir)\System.Reflection.DispatchProxy.dll" />
+        <File Id="SystemReflectionEmit" Name="System.Reflection.Emit.dll" Source="$(var.SourceDir)\System.Reflection.Emit.dll" />
+        <File Id="SystemReflectionEmitILGeneration" Name="System.Reflection.Emit.ILGeneration.dll" Source="$(var.SourceDir)\System.Reflection.Emit.ILGeneration.dll" />
+        <File Id="SystemReflectionEmitLightweight" Name="System.Reflection.Emit.Lightweight.dll" Source="$(var.SourceDir)\System.Reflection.Emit.Lightweight.dll" />
+        <File Id="SystemReflectionExtensions" Name="System.Reflection.Extensions.dll" Source="$(var.SourceDir)\System.Reflection.Extensions.dll" />
+        <File Id="SystemReflectionMetadata" Name="System.Reflection.Metadata.dll" Source="$(var.SourceDir)\System.Reflection.Metadata.dll" />
+        <File Id="SystemReflectionPrimitives" Name="System.Reflection.Primitives.dll" Source="$(var.SourceDir)\System.Reflection.Primitives.dll" />
+        <File Id="SystemReflectionTypeExtensions" Name="System.Reflection.TypeExtensions.dll" Source="$(var.SourceDir)\System.Reflection.TypeExtensions.dll" />
+        <File Id="SystemResourcesReader" Name="System.Resources.Reader.dll" Source="$(var.SourceDir)\System.Resources.Reader.dll" />
+        <File Id="SystemResourcesResourceManager" Name="System.Resources.ResourceManager.dll" Source="$(var.SourceDir)\System.Resources.ResourceManager.dll" />
+        <File Id="SystemResourcesWriter" Name="System.Resources.Writer.dll" Source="$(var.SourceDir)\System.Resources.Writer.dll" />
+        <File Id="SystemSecurity" Name="System.Security.dll" Source="$(var.SourceDir)\System.Security.dll" />
+        <File Id="SystemSecurityAccessControl" Name="System.Security.AccessControl.dll" Source="$(var.SourceDir)\System.Security.AccessControl.dll" />
+        <File Id="SystemSecurityClaims" Name="System.Security.Claims.dll" Source="$(var.SourceDir)\System.Security.Claims.dll" />
+        <File Id="SystemSecurityCryptography" Name="System.Security.Cryptography.dll" Source="$(var.SourceDir)\System.Security.Cryptography.dll" />
+        <File Id="SystemSecurityCryptographyAlgorithms" Name="System.Security.Cryptography.Algorithms.dll" Source="$(var.SourceDir)\System.Security.Cryptography.Algorithms.dll" />
+        <File Id="SystemSecurityCryptographyCng" Name="System.Security.Cryptography.Cng.dll" Source="$(var.SourceDir)\System.Security.Cryptography.Cng.dll" />
+        <File Id="SystemSecurityCryptographyCsp" Name="System.Security.Cryptography.Csp.dll" Source="$(var.SourceDir)\System.Security.Cryptography.Csp.dll" />
+        <File Id="SystemSecurityCryptographyEncoding" Name="System.Security.Cryptography.Encoding.dll" Source="$(var.SourceDir)\System.Security.Cryptography.Encoding.dll" />
+        <File Id="SystemSecurityCryptographyOpenSsl" Name="System.Security.Cryptography.OpenSsl.dll" Source="$(var.SourceDir)\System.Security.Cryptography.OpenSsl.dll" />
+        <File Id="SystemSecurityCryptographyPrimitives" Name="System.Security.Cryptography.Primitives.dll" Source="$(var.SourceDir)\System.Security.Cryptography.Primitives.dll" />
+        <File Id="SystemSecurityCryptographyX509Certificates" Name="System.Security.Cryptography.X509Certificates.dll" Source="$(var.SourceDir)\System.Security.Cryptography.X509Certificates.dll" />
+        <File Id="SystemSecurityPrincipal" Name="System.Security.Principal.dll" Source="$(var.SourceDir)\System.Security.Principal.dll" />
+        <File Id="SystemSecurityPrincipalWindows" Name="System.Security.Principal.Windows.dll" Source="$(var.SourceDir)\System.Security.Principal.Windows.dll" />
+        <File Id="SystemSecuritySecureString" Name="System.Security.SecureString.dll" Source="$(var.SourceDir)\System.Security.SecureString.dll" />
+        <File Id="SystemServiceModelWeb" Name="System.ServiceModel.Web.dll" Source="$(var.SourceDir)\System.ServiceModel.Web.dll" />
+        <File Id="SystemServiceProcess" Name="System.ServiceProcess.dll" Source="$(var.SourceDir)\System.ServiceProcess.dll" />
+        <File Id="SystemTextEncoding" Name="System.Text.Encoding.dll" Source="$(var.SourceDir)\System.Text.Encoding.dll" />
+        <File Id="SystemTextEncodingCodePages" Name="System.Text.Encoding.CodePages.dll" Source="$(var.SourceDir)\System.Text.Encoding.CodePages.dll" />
+        <File Id="SystemTextEncodingExtensions" Name="System.Text.Encoding.Extensions.dll" Source="$(var.SourceDir)\System.Text.Encoding.Extensions.dll" />
+        <File Id="SystemTextEncodingsWeb" Name="System.Text.Encodings.Web.dll" Source="$(var.SourceDir)\System.Text.Encodings.Web.dll" />
+        <File Id="SystemTextJson" Name="System.Text.Json.dll" Source="$(var.SourceDir)\System.Text.Json.dll" />
+        <File Id="SystemTextRegularExpressions" Name="System.Text.RegularExpressions.dll" Source="$(var.SourceDir)\System.Text.RegularExpressions.dll" />
+        <File Id="SystemThreading" Name="System.Threading.dll" Source="$(var.SourceDir)\System.Threading.dll" />
+        <File Id="SystemThreadingChannels" Name="System.Threading.Channels.dll" Source="$(var.SourceDir)\System.Threading.Channels.dll" />
+        <File Id="SystemThreadingOverlapped" Name="System.Threading.Overlapped.dll" Source="$(var.SourceDir)\System.Threading.Overlapped.dll" />
+        <File Id="SystemThreadingTasks" Name="System.Threading.Tasks.dll" Source="$(var.SourceDir)\System.Threading.Tasks.dll" />
+        <File Id="SystemThreadingTasksDataflow" Name="System.Threading.Tasks.Dataflow.dll" Source="$(var.SourceDir)\System.Threading.Tasks.Dataflow.dll" />
+        <File Id="SystemThreadingTasksExtensions" Name="System.Threading.Tasks.Extensions.dll" Source="$(var.SourceDir)\System.Threading.Tasks.Extensions.dll" />
+        <File Id="SystemThreadingTasksParallel" Name="System.Threading.Tasks.Parallel.dll" Source="$(var.SourceDir)\System.Threading.Tasks.Parallel.dll" />
+        <File Id="SystemThreadingThread" Name="System.Threading.Thread.dll" Source="$(var.SourceDir)\System.Threading.Thread.dll" />
+        <File Id="SystemThreadingThreadPool" Name="System.Threading.ThreadPool.dll" Source="$(var.SourceDir)\System.Threading.ThreadPool.dll" />
+        <File Id="SystemThreadingTimer" Name="System.Threading.Timer.dll" Source="$(var.SourceDir)\System.Threading.Timer.dll" />
+        <File Id="SystemTransactions" Name="System.Transactions.dll" Source="$(var.SourceDir)\System.Transactions.dll" />
+        <File Id="SystemTransactionsLocal" Name="System.Transactions.Local.dll" Source="$(var.SourceDir)\System.Transactions.Local.dll" />
+        <File Id="SystemValueTuple" Name="System.ValueTuple.dll" Source="$(var.SourceDir)\System.ValueTuple.dll" />
+        <File Id="SystemWeb" Name="System.Web.dll" Source="$(var.SourceDir)\System.Web.dll" />
+        <File Id="SystemWebHttpUtility" Name="System.Web.HttpUtility.dll" Source="$(var.SourceDir)\System.Web.HttpUtility.dll" />
+        <File Id="SystemWindows" Name="System.Windows.dll" Source="$(var.SourceDir)\System.Windows.dll" />
+        <File Id="SystemXml" Name="System.Xml.dll" Source="$(var.SourceDir)\System.Xml.dll" />
+        <File Id="SystemXmlLinq" Name="System.Xml.Linq.dll" Source="$(var.SourceDir)\System.Xml.Linq.dll" />
+        <File Id="SystemXmlReaderWriter" Name="System.Xml.ReaderWriter.dll" Source="$(var.SourceDir)\System.Xml.ReaderWriter.dll" />
+        <File Id="SystemXmlSerialization" Name="System.Xml.Serialization.dll" Source="$(var.SourceDir)\System.Xml.Serialization.dll" />
+        <File Id="SystemXmlXDocument" Name="System.Xml.XDocument.dll" Source="$(var.SourceDir)\System.Xml.XDocument.dll" />
+        <File Id="SystemXmlXmlDocument" Name="System.Xml.XmlDocument.dll" Source="$(var.SourceDir)\System.Xml.XmlDocument.dll" />
+        <File Id="SystemXmlXmlSerializer" Name="System.Xml.XmlSerializer.dll" Source="$(var.SourceDir)\System.Xml.XmlSerializer.dll" />
+        <File Id="SystemXmlXPath" Name="System.Xml.XPath.dll" Source="$(var.SourceDir)\System.Xml.XPath.dll" />
+        <File Id="SystemXmlXPathXDocument" Name="System.Xml.XPath.XDocument.dll" Source="$(var.SourceDir)\System.Xml.XPath.XDocument.dll" />
+        <File Id="WindowsBase" Name="WindowsBase.dll" Source="$(var.SourceDir)\WindowsBase.dll" />
+        <File Id="MicrosoftWin32Primitives" Name="Microsoft.Win32.Primitives.dll" Source="$(var.SourceDir)\Microsoft.Win32.Primitives.dll" />
+        <File Id="MicrosoftWin32Registry" Name="Microsoft.Win32.Registry.dll" Source="$(var.SourceDir)\Microsoft.Win32.Registry.dll" />
+      </Component>
+
+      <!-- Native Libraries -->
+      <Component Id="NativeLibraries" Guid="DDDDDDDD-EEEE-FFFF-0000-000000000000">
+        <File Id="AvLibglesv2" Name="av_libglesv2.dll" Source="$(var.SourceDir)\av_libglesv2.dll" />
+        <File Id="Msquic" Name="msquic.dll" Source="$(var.SourceDir)\msquic.dll" />
+        <File Id="MicrosoftDiaSymReaderNativeAmd64" Name="Microsoft.DiaSymReader.Native.amd64.dll" Source="$(var.SourceDir)\Microsoft.DiaSymReader.Native.amd64.dll" />
+        <File Id="MscordaccoreAmd64" Name="mscordaccore_amd64_amd64_9.0.925.41916.dll" Source="$(var.SourceDir)\mscordaccore_amd64_amd64_9.0.925.41916.dll" />
+        <File Id="Mscordaccore" Name="mscordaccore.dll" Source="$(var.SourceDir)\mscordaccore.dll" />
+        <File Id="Mscordbi" Name="mscordbi.dll" Source="$(var.SourceDir)\mscordbi.dll" />
+      </Component>
+
+      <!-- Avalonia Libraries -->
+      <Component Id="AvaloniaLibraries" Guid="55555555-6666-7777-8888-888888888888">
+        <File Id="AvaloniaBase" Name="Avalonia.Base.dll" Source="$(var.SourceDir)\Avalonia.Base.dll" />
+        <File Id="AvaloniaControls" Name="Avalonia.Controls.dll" Source="$(var.SourceDir)\Avalonia.Controls.dll" />
+        <File Id="AvaloniaDesktop" Name="Avalonia.Desktop.dll" Source="$(var.SourceDir)\Avalonia.Desktop.dll" />
+        <File Id="AvaloniaMarkup" Name="Avalonia.Markup.dll" Source="$(var.SourceDir)\Avalonia.Markup.dll" />
+        <File Id="AvaloniaMarkupXaml" Name="Avalonia.Markup.Xaml.dll" Source="$(var.SourceDir)\Avalonia.Markup.Xaml.dll" />
+        <File Id="AvaloniaThemesFluent" Name="Avalonia.Themes.Fluent.dll" Source="$(var.SourceDir)\Avalonia.Themes.Fluent.dll" />
+        <File Id="AvaloniaFontsInter" Name="Avalonia.Fonts.Inter.dll" Source="$(var.SourceDir)\Avalonia.Fonts.Inter.dll" />
+        <File Id="AvaloniaControlsDataGrid" Name="Avalonia.Controls.DataGrid.dll" Source="$(var.SourceDir)\Avalonia.Controls.DataGrid.dll" />
+        <File Id="AvaloniaWin32" Name="Avalonia.Win32.dll" Source="$(var.SourceDir)\Avalonia.Win32.dll" />
+        <File Id="AvaloniaSkia" Name="Avalonia.Skia.dll" Source="$(var.SourceDir)\Avalonia.Skia.dll" />
+        <File Id="AvaloniaNative" Name="Avalonia.Native.dll" Source="$(var.SourceDir)\Avalonia.Native.dll" />
+        <File Id="AvaloniaOpenGL" Name="Avalonia.OpenGL.dll" Source="$(var.SourceDir)\Avalonia.OpenGL.dll" />
+        <File Id="AvaloniaVulkan" Name="Avalonia.Vulkan.dll" Source="$(var.SourceDir)\Avalonia.Vulkan.dll" />
+        <File Id="AvaloniaMetal" Name="Avalonia.Metal.dll" Source="$(var.SourceDir)\Avalonia.Metal.dll" />
+        <File Id="AvaloniaFreeDesktop" Name="Avalonia.FreeDesktop.dll" Source="$(var.SourceDir)\Avalonia.FreeDesktop.dll" />
+        <File Id="AvaloniaX11" Name="Avalonia.X11.dll" Source="$(var.SourceDir)\Avalonia.X11.dll" />
+        <File Id="AvaloniaMicroCom" Name="Avalonia.MicroCom.dll" Source="$(var.SourceDir)\Avalonia.MicroCom.dll" />
+        <File Id="AvaloniaRemoteProtocol" Name="Avalonia.Remote.Protocol.dll" Source="$(var.SourceDir)\Avalonia.Remote.Protocol.dll" />
+        <File Id="AvaloniaDesignerSupport" Name="Avalonia.DesignerSupport.dll" Source="$(var.SourceDir)\Avalonia.DesignerSupport.dll" />
+        <File Id="AvaloniaDialogs" Name="Avalonia.Dialogs.dll" Source="$(var.SourceDir)\Avalonia.Dialogs.dll" />
+      </Component>
+
+      <!-- SkiaSharp and HarfBuzzSharp -->
+      <Component Id="SkiaLibraries" Guid="99999999-AAAA-BBBB-CCCC-CCCCCCCCCCCC">
+        <File Id="SkiaSharp" Name="SkiaSharp.dll" Source="$(var.SourceDir)\SkiaSharp.dll" />
+        <File Id="HarfBuzzSharp" Name="HarfBuzzSharp.dll" Source="$(var.SourceDir)\HarfBuzzSharp.dll" />
+        <File Id="MicroComRuntime" Name="MicroCom.Runtime.dll" Source="$(var.SourceDir)\MicroCom.Runtime.dll" />
+        <File Id="TmdsDBusProtocol" Name="Tmds.DBus.Protocol.dll" Source="$(var.SourceDir)\Tmds.DBus.Protocol.dll" />
+        <File Id="LibSkiaSharp" Name="libSkiaSharp.dll" Source="$(var.SourceDir)\libSkiaSharp.dll" />
+        <File Id="LibHarfBuzzSharp" Name="libHarfBuzzSharp.dll" Source="$(var.SourceDir)\libHarfBuzzSharp.dll" />
+      </Component>
+
+      <!-- Bundled Tools -->
+      <Component Id="BundledTools" Directory="FfmpegDir" Guid="DDDDDDDD-EEEE-FFFF-1111-111111111111">
+        <File Id="FfmpegExe" Name="ffmpeg.exe" Source="$(var.SourceDir)\Tools\ffmpeg\ffmpeg.exe" />
+        <File Id="FfplayExe" Name="ffplay.exe" Source="$(var.SourceDir)\Tools\ffmpeg\ffplay.exe" />
+        <File Id="FfprobeExe" Name="ffprobe.exe" Source="$(var.SourceDir)\Tools\ffmpeg\ffprobe.exe" />
+      </Component>
+      
+      <Component Id="YtDlpTool" Directory="ToolsDir" Guid="EEEEEEEE-FFFF-1111-2222-222222222222">
+        <File Id="YtDlpExe" Name="yt-dlp.exe" Source="$(var.SourceDir)\Tools\yt-dlp.exe" />
+      </Component>
+    </ComponentGroup>
+
+    <!-- Desktop Shortcut -->
+    <Component Id="ApplicationShortcut" Directory="DesktopFolder" Guid="33333333-4444-5555-6666-666666666666">
+      <Shortcut Id="ApplicationDesktopShortcut" 
+                Name="RealSnag Media Downloader" 
+                Target="[INSTALLFOLDER]realsnag-media-downloader.exe"
+                WorkingDirectory="INSTALLFOLDER" 
+                Icon="ApplicationIcon" 
+                IconIndex="0" />
+      <RemoveFolder Id="DesktopFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Realgar\RealSnag Media Downloader" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- Start Menu Shortcut -->
+    <Component Id="StartMenuShortcut" Directory="ProgramMenuDir" Guid="44444444-5555-6666-7777-777777777777">
+      <Shortcut Id="ApplicationStartMenuShortcut" 
+                Name="RealSnag Media Downloader" 
+                Target="[INSTALLFOLDER]realsnag-media-downloader.exe"
+                WorkingDirectory="INSTALLFOLDER" 
+                Icon="ApplicationIcon" 
+                IconIndex="0" />
+      <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Realgar\RealSnag Media Downloader" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <!-- Icon -->
+    <Icon Id="ApplicationIcon" SourceFile="$(var.SourceDir)\realsnag-media-downloader.ico" />
+
+  </Package>
+</Wix>
