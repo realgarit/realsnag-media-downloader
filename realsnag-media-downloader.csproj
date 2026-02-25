@@ -12,6 +12,9 @@
     <Version>2.0.0</Version>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
+    <Product>realsnag-media-downloader</Product>
+    <Company>RealSnag</Company>
+    <Copyright>Copyright (c) 2026 Realgar</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
