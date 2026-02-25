@@ -20,7 +20,7 @@ public class LocalizationService
         {
             ["en"] = new Dictionary<string, string>
             {
-                ["AppTitle"] = "RealSnag Media Downloader",
+                ["AppTitle"] = "Realgar Media Downloader",
                 ["EnterLink"] = "Enter Link:",
                 ["MediaMetadata"] = "Media metadata will appear here after you paste the link",
                 ["SelectFormat"] = "Select Format:",
@@ -49,7 +49,7 @@ public class LocalizationService
             },
             ["de"] = new Dictionary<string, string>
             {
-                ["AppTitle"] = "RealSnag Media Downloader",
+                ["AppTitle"] = "Realgar Media Downloader",
                 ["EnterLink"] = "Link eingeben:",
                 ["MediaMetadata"] = "Medien-Metadaten werden hier angezeigt, nachdem Sie den Link eingefügt haben",
                 ["SelectFormat"] = "Format wählen:",
