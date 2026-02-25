@@ -3,7 +3,7 @@
         xmlns:services="using:realsnag_media_downloader.Services"
         xmlns:controls="using:realsnag_media_downloader.Controls"
         x:Class="realsnag_media_downloader.MainWindow"
-        Title="RealSnag Media Downloader"
+        Title="Realgar Media Downloader"
         Width="700"
         Height="600"
         MinWidth="700"
@@ -74,9 +74,9 @@
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
             <TextBlock Name="LinkLabel" Text="Enter Link:" Grid.Column="0" Margin="5"/>
             <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" Margin="5">
-                <TextBlock Name="VersionLabel" Text="v1.1.1" 
+                <TextBlock Name="VersionLabel" Text="v2.0.0" 
                           FontSize="12" Opacity="0.7" HorizontalAlignment="Right"/>
-                <TextBlock Text="© 2025 Realgar. MIT License." 
+                <TextBlock Text="© 2026 Realgar. MIT License." 
                           FontSize="10" Opacity="0.5" HorizontalAlignment="Right"/>
             </StackPanel>
         </Grid>

@@ -65,6 +65,6 @@ Download the latest MSI installer from the releases page and run it. The install
 
 ## License
 
-Copyright (c) 2025 Realgar. Licensed under the MIT License.
+Copyright (c) 2026 Realgar. Licensed under the MIT License.
 
 This project is for educational purposes. Please respect the terms of service of the platforms you download from.
