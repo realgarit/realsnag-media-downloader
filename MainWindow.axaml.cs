@@ -555,8 +555,11 @@ public partial class MainWindow : Window
 
     private string GetMediaDownloaderToolName()
     {
+        // Get the appropriate executable extension based on runtime
+        var ext = GetExecutableExtension();
+
         // First, try to use the bundled yt-dlp
-        var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tools", "yt-dlp.exe");
+        var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tools", "yt-dlp" + ext);
         if (File.Exists(bundledPath))
         {
             try
@@ -628,8 +631,11 @@ public partial class MainWindow : Window
 
     private string GetFFmpegPath()
     {
+        // Get the appropriate executable extension based on runtime
+        var ext = GetExecutableExtension();
+
         // First, try to use the bundled ffmpeg
-        var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tools", "ffmpeg", "ffmpeg.exe");
+        var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tools", "ffmpeg", "ffmpeg" + ext);
         if (File.Exists(bundledPath))
         {
             try
@@ -758,5 +764,18 @@ public partial class MainWindow : Window
 
         // If nothing found, return bundled path as fallback
         return bundledPath;
+    }
+
+    private string GetExecutableExtension()
+    {
+        // Return appropriate extension based on the current runtime
+        if (OperatingSystem.IsWindows())
+            return ".exe";
+        else if (OperatingSystem.IsMacOS())
+            return ""; // macOS executables don't need extension
+        else if (OperatingSystem.IsLinux())
+            return ""; // Linux executables don't need extension
+
+        return ".exe"; // Default to Windows
     }
 }
