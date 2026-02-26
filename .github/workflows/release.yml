@@ -12,44 +12,38 @@ jobs:
         include:
           - runtime: win-x64
             os: windows-latest
+            ext: .exe
           - runtime: linux-x64
             os: ubuntu-latest
+            ext: ""
           - runtime: osx-x64
             os: macos-latest
+            ext: ""
           - runtime: osx-arm64
             os: macos-latest
+            ext: ""
     
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }
     
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+    - run: dotnet restore
 
-    - name: Build
-      run: dotnet build -c Release --self-contained false
+    - run: dotnet build -c Release --self-contained false
 
-    - name: Publish ${{ matrix.runtime }}
-      run: |
-        dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained true \
-          -p:PublishSingleFile=false \
-          -o ./publish/${{ matrix.runtime }}
+    - run: dotnet publish -c Release -r ${{ matrix.runtime } --self-contained true -p:PublishSingleFile=false -o ./publish/${{ matrix.runtime }
 
-    - name: Upload Release Asset
+    - uses: softprops/action-gh-release@v2
       if: matrix.runtime == 'win-x64'
-      uses: softprops/action-gh-release@v2
       with:
-        tag_name: v${{ github.run_number }}
+        tag_name: v${{ github.run_number }
         draft: false
         prerelease: false
-        files: |
-          ./publish/${{ matrix.runtime }}/**
+        files: ./publish/${{ matrix.runtime }${{ matrix.ext }
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }
