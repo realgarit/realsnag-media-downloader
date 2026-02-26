@@ -96,11 +96,14 @@ jobs:
         zip -r linux-x64.zip linux-x64
         zip -r osx-x64.zip osx-x64
         zip -r osx-arm64.zip osx-arm64
+    - name: Get version
+      id: version
+      run: echo "VERSION=$(grep -E '<Version>' realsnag-media-downloader.csproj | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/')" >> $GITHUB_OUTPUT
     - name: Create Release
       uses: softprops/action-gh-release@v2.1.0
       with:
-        tag_name: v${{ github.run_number }}-latest
-        name: Release v${{ github.run_number }}
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: Release v${{ steps.version.outputs.VERSION }}
         draft: false
         prerelease: false
         files: |
