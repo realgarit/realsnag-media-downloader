@@ -43,12 +43,12 @@ jobs:
           -o ./publish/${{ matrix.runtime }}
 
     - name: Upload Release Asset
+      if: matrix.runtime == 'win-x64'
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ github.run_number }}
         draft: false
         prerelease: false
-        generate_release_notes: true
         files: |
           ./publish/${{ matrix.runtime }}/**
       env:
