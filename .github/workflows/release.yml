@@ -39,8 +39,6 @@ jobs:
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.x'
-    - name: Add NuGet source
-      run: dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
     - run: dotnet restore
     - run: dotnet build -c Release
     - run: dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish/linux-x64
