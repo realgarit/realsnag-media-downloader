@@ -99,7 +99,8 @@ jobs:
     - name: Delete existing release
       run: |
         if gh release view v${{ steps.version.outputs.version }} --repo ${{ github.repository }} 2>/dev/null; then
-          gh release delete v${{ steps.version.outputs.version }} --yes --cleanup
+          gh release delete v${{ steps.version.outputs.version }} --yes
+          git push --delete origin v${{ steps.version.outputs.version }} 2>/dev/null || true
         fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
