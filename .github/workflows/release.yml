@@ -71,6 +71,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Get version
+      id: version
+      run: echo "version=$(grep -oP '<Version>\K[^<]+' realsnag-media-downloader.csproj)" >> $GITHUB_OUTPUT
     - name: Download win-x64
       uses: actions/download-artifact@v4
       with:
@@ -94,6 +97,7 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: v${{ steps.version.outputs.version }}
         draft: false
         prerelease: false
         generate_release_notes: true
