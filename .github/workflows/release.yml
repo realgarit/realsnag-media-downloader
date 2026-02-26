@@ -94,7 +94,7 @@ jobs:
         name: publish-osx-arm64
         path: ./publish/osx-arm64
     - name: Create Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v2.1.0
       with:
         tag_name: v${{ github.run_number }}-latest
         name: Release v${{ github.run_number }}
