@@ -96,6 +96,13 @@ jobs:
       with:
         name: publish-osx-arm64
         path: ./publish/osx-arm64
+    - name: Delete existing release
+      run: |
+        if gh release view v${{ steps.version.outputs.version }} --repo ${{ github.repository }} 2>/dev/null; then
+          gh release delete v${{ steps.version.outputs.version }} --yes --cleanup
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
