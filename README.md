@@ -28,7 +28,14 @@ Grab the latest release for your platform from the [Releases](../../releases) pa
 | macOS Apple Silicon | `osx-arm64.zip` |
 | Linux x64 | `linux-x64.zip` |
 
-The app is self-contained — .NET runtime and yt-dlp are bundled. **ffmpeg** is required for merging video+audio streams (4K, 1080p, etc.). Install via your package manager:
+The app is self-contained — .NET runtime and yt-dlp are bundled.
+
+> **macOS users:** If you see "can't be opened" after extracting, run this in Terminal:
+> ```bash
+> xattr -cr "RealSnag Media Downloader.app"
+> ```
+
+**ffmpeg** is required for merging video+audio streams (4K, 1080p, etc.). Install via your package manager:
 
 - macOS: `brew install ffmpeg`
 - Linux: `sudo apt install ffmpeg` (or equivalent)
