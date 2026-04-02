@@ -30,9 +30,10 @@ Grab the latest release for your platform from the [Releases](../../releases) pa
 
 The app is self-contained — .NET runtime and yt-dlp are bundled.
 
-> **macOS users:** If you see "can't be opened" after extracting, run this in Terminal:
+> **macOS users:** After extracting, you may need to remove the quarantine flag:
 > ```bash
-> xattr -cr "RealSnag Media Downloader.app"
+> chmod +x realsnag-media-downloader
+> xattr -cr realsnag-media-downloader
 > ```
 
 **ffmpeg** is required for merging video+audio streams (4K, 1080p, etc.). Install via your package manager:
