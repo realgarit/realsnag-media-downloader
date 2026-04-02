@@ -68,15 +68,21 @@ jobs:
         curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_macos"' | tr -d '"') -o yt-dlp-bin
         chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/osx-x64
-    - name: Bundle yt-dlp
+    - name: Create .app bundle
       run: |
-        mkdir -p ./publish/osx-x64/bin
-        mv yt-dlp-bin ./publish/osx-x64/bin/yt-dlp
-        chmod +x ./publish/osx-x64/bin/yt-dlp
+        APP="./publish/RealSnag Media Downloader.app"
+        mkdir -p "$APP/Contents/MacOS"
+        mkdir -p "$APP/Contents/Resources"
+        cp Assets/macOS/Info.plist "$APP/Contents/"
+        cp -R ./publish/osx-x64/* "$APP/Contents/MacOS/"
+        mkdir -p "$APP/Contents/MacOS/bin"
+        mv yt-dlp-bin "$APP/Contents/MacOS/bin/yt-dlp"
+        chmod +x "$APP/Contents/MacOS/bin/yt-dlp"
+        chmod +x "$APP/Contents/MacOS/realsnag-media-downloader"
     - uses: actions/upload-artifact@v4
       with:
         name: publish-osx-x64
-        path: ./publish/osx-x64
+        path: ./publish/RealSnag Media Downloader.app
 
   build-macos-arm64:
     runs-on: macos-latest
@@ -91,15 +97,21 @@ jobs:
         curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_macos"' | tr -d '"') -o yt-dlp-bin
         chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=false -o ./publish/osx-arm64
-    - name: Bundle yt-dlp
+    - name: Create .app bundle
       run: |
-        mkdir -p ./publish/osx-arm64/bin
-        mv yt-dlp-bin ./publish/osx-arm64/bin/yt-dlp
-        chmod +x ./publish/osx-arm64/bin/yt-dlp
+        APP="./publish/RealSnag Media Downloader.app"
+        mkdir -p "$APP/Contents/MacOS"
+        mkdir -p "$APP/Contents/Resources"
+        cp Assets/macOS/Info.plist "$APP/Contents/"
+        cp -R ./publish/osx-arm64/* "$APP/Contents/MacOS/"
+        mkdir -p "$APP/Contents/MacOS/bin"
+        mv yt-dlp-bin "$APP/Contents/MacOS/bin/yt-dlp"
+        chmod +x "$APP/Contents/MacOS/bin/yt-dlp"
+        chmod +x "$APP/Contents/MacOS/realsnag-media-downloader"
     - uses: actions/upload-artifact@v4
       with:
         name: publish-osx-arm64
-        path: ./publish/osx-arm64
+        path: ./publish/RealSnag Media Downloader.app
 
   release:
     needs: [build-win, build-linux, build-macos-x64, build-macos-arm64]
@@ -122,19 +134,19 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: publish-osx-x64
-        path: ./publish/osx-x64
+        path: ./publish/RealSnag Media Downloader-x64.app
     - name: Download osx-arm64
       uses: actions/download-artifact@v4
       with:
         name: publish-osx-arm64
-        path: ./publish/osx-arm64
+        path: ./publish/RealSnag Media Downloader-arm64.app
     - name: Create zip archives
       run: |
         cd ./publish
         zip -r win-x64.zip win-x64
         zip -r linux-x64.zip linux-x64
-        zip -r osx-x64.zip osx-x64
-        zip -r osx-arm64.zip osx-arm64
+        zip -ry osx-x64.zip "RealSnag Media Downloader-x64.app"
+        zip -ry osx-arm64.zip "RealSnag Media Downloader-arm64.app"
     - name: Get version
       id: version
       run: echo "VERSION=$(grep -E '<Version>' realsnag-media-downloader.csproj | sed 's/.*<Version>\(.*\)<\/Version>.*/\1/')" >> $GITHUB_OUTPUT

@@ -2,9 +2,11 @@
 
 A cross-platform media downloader built with Avalonia UI and yt-dlp.
 
+![RealSnag Media Downloader](Assets/screenshots/main-window.png)
+
 ## Features
 
-- Download video (MP4) and audio (MP3) from YouTube and other sites
+- Download video (MP4) and audio (MP3) from supported sites
 - Quality selection — choose 4K, 1080p, 720p, or best available
 - Video trimming — cut start/end times before downloading
 - Automatic metadata fetching with thumbnail preview
@@ -17,7 +19,7 @@ A cross-platform media downloader built with Avalonia UI and yt-dlp.
 
 ## Download
 
-Grab the latest zip for your platform from the [Releases](../../releases) page. Extract and run — no installation required.
+Grab the latest release for your platform from the [Releases](../../releases) page. Extract and run — no installation required.
 
 | Platform | File |
 |----------|------|

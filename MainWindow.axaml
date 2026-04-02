@@ -41,10 +41,10 @@
 
             <!-- Header -->
             <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,6">
-                <StackPanel Spacing="3">
-                    <TextBlock Text="Realgar Media Downloader" FontSize="24" FontWeight="Bold"
+                <StackPanel Spacing="2" VerticalAlignment="Center">
+                    <TextBlock Text="Realgar Media Downloader" FontSize="20" FontWeight="SemiBold"
                                Foreground="#FAFAFA" />
-                    <TextBlock Text="{Binding VersionString}" FontSize="11" Foreground="#71717A" />
+                    <TextBlock Text="{Binding VersionString}" FontSize="10" Foreground="#52525B" />
                 </StackPanel>
                 <Button Grid.Column="1" VerticalAlignment="Center" Name="SettingsButton"
                         Background="{StaticResource SecondaryBg}" Foreground="#E4E4E7"
@@ -63,7 +63,7 @@
                     BorderThickness="1" BorderBrush="{StaticResource CardBorder}">
                 <StackPanel Spacing="14">
                     <TextBox Name="UrlTextBox" Text="{Binding Url}"
-                             Watermark="https://www.youtube.com/watch?v=..."
+                             Watermark="Paste a media link here..."
                              FontSize="14" CornerRadius="8" />
 
                     <!-- Thumbnail + metadata -->
