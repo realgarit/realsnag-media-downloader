@@ -175,15 +175,7 @@ public class ToolManager
     {
         if (_cachedFfmpegPath != null) return _cachedFfmpegPath;
 
-        // Try to resolve full path from PATH (yt-dlp needs absolute path)
-        var resolved = ResolveExecutablePath("ffmpeg");
-        if (resolved != null)
-        {
-            _cachedFfmpegPath = resolved;
-            return _cachedFfmpegPath;
-        }
-
-        // Try common locations
+        // Try common known locations first (most reliable)
         string[] commonPaths;
         if (OperatingSystem.IsMacOS())
         {
@@ -222,7 +214,15 @@ public class ToolManager
             }
         }
 
-        // Fallback — hope it's in PATH
+        // Try resolving from PATH via which/where
+        var resolved = ResolveExecutablePath("ffmpeg");
+        if (resolved != null)
+        {
+            _cachedFfmpegPath = resolved;
+            return _cachedFfmpegPath;
+        }
+
+        // Last resort fallback
         _cachedFfmpegPath = "ffmpeg";
         return _cachedFfmpegPath;
     }
@@ -268,16 +268,16 @@ public class ToolManager
     {
         try
         {
+            var isFfmpeg = name.Contains("ffmpeg", StringComparison.OrdinalIgnoreCase);
             var psi = new ProcessStartInfo
             {
                 FileName = name,
-                Arguments = OperatingSystem.IsWindows() && name == "ffmpeg" ? "-version" : "--version",
+                Arguments = isFfmpeg ? "-version" : "--version",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-            if (name == "ffmpeg") psi.Arguments = "-version";
 
             using var process = Process.Start(psi);
             if (process == null) return false;
