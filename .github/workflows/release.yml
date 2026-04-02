@@ -16,10 +16,10 @@ jobs:
     - run: dotnet restore
     - name: Download yt-dlp
       shell: pwsh
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
-        $release = Invoke-RestMethod "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest"
-        $asset = $release.assets | Where-Object { $_.name -eq "yt-dlp.exe" }
-        Invoke-WebRequest $asset.browser_download_url -OutFile "./yt-dlp-bin.exe"
+        gh release download --repo yt-dlp/yt-dlp --pattern "yt-dlp.exe" --output yt-dlp-bin.exe
     - run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/win-x64
     - name: Bundle yt-dlp
       shell: pwsh
@@ -41,8 +41,10 @@ jobs:
         dotnet-version: '10.x'
     - run: dotnet restore
     - name: Download yt-dlp
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
-        curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_linux"' | tr -d '"') -o yt-dlp-bin
+        gh release download --repo yt-dlp/yt-dlp --pattern "yt-dlp_linux" --output yt-dlp-bin
         chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/linux-x64
     - name: Bundle yt-dlp and set permissions
@@ -65,8 +67,10 @@ jobs:
         dotnet-version: '10.x'
     - run: dotnet restore
     - name: Download yt-dlp
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
-        curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_macos"' | tr -d '"') -o yt-dlp-bin
+        gh release download --repo yt-dlp/yt-dlp --pattern "yt-dlp_macos" --output yt-dlp-bin
         chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/osx-x64
     - name: Bundle yt-dlp and set permissions
@@ -89,8 +93,10 @@ jobs:
         dotnet-version: '10.x'
     - run: dotnet restore
     - name: Download yt-dlp
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
-        curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_macos"' | tr -d '"') -o yt-dlp-bin
+        gh release download --repo yt-dlp/yt-dlp --pattern "yt-dlp_macos" --output yt-dlp-bin
         chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=false -o ./publish/osx-arm64
     - name: Bundle yt-dlp and set permissions
