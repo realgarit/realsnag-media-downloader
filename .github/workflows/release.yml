@@ -14,7 +14,19 @@ jobs:
       with:
         dotnet-version: '10.x'
     - run: dotnet restore
+    - name: Download yt-dlp
+      shell: pwsh
+      run: |
+        $release = Invoke-RestMethod "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest"
+        $asset = $release.assets | Where-Object { $_.name -eq "yt-dlp.exe" }
+        Invoke-WebRequest $asset.browser_download_url -OutFile "./yt-dlp-bin.exe"
     - run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/win-x64
+    - name: Bundle yt-dlp
+      shell: pwsh
+      run: |
+        $binDir = "./publish/win-x64/bin"
+        New-Item -ItemType Directory -Force -Path $binDir
+        Move-Item "./yt-dlp-bin.exe" "$binDir/yt-dlp.exe"
     - uses: actions/upload-artifact@v4
       with:
         name: publish-win-x64
@@ -28,7 +40,16 @@ jobs:
       with:
         dotnet-version: '10.x'
     - run: dotnet restore
+    - name: Download yt-dlp
+      run: |
+        curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_linux"' | tr -d '"') -o yt-dlp-bin
+        chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/linux-x64
+    - name: Bundle yt-dlp
+      run: |
+        mkdir -p ./publish/linux-x64/bin
+        mv yt-dlp-bin ./publish/linux-x64/bin/yt-dlp
+        chmod +x ./publish/linux-x64/bin/yt-dlp
     - uses: actions/upload-artifact@v4
       with:
         name: publish-linux-x64
@@ -42,7 +63,16 @@ jobs:
       with:
         dotnet-version: '10.x'
     - run: dotnet restore
+    - name: Download yt-dlp
+      run: |
+        curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_macos"' | tr -d '"') -o yt-dlp-bin
+        chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=false -o ./publish/osx-x64
+    - name: Bundle yt-dlp
+      run: |
+        mkdir -p ./publish/osx-x64/bin
+        mv yt-dlp-bin ./publish/osx-x64/bin/yt-dlp
+        chmod +x ./publish/osx-x64/bin/yt-dlp
     - uses: actions/upload-artifact@v4
       with:
         name: publish-osx-x64
@@ -56,7 +86,16 @@ jobs:
       with:
         dotnet-version: '10.x'
     - run: dotnet restore
+    - name: Download yt-dlp
+      run: |
+        curl -sL $(curl -s https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | grep -o 'https://[^"]*yt-dlp_macos"' | tr -d '"') -o yt-dlp-bin
+        chmod +x yt-dlp-bin
     - run: dotnet publish -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=false -o ./publish/osx-arm64
+    - name: Bundle yt-dlp
+      run: |
+        mkdir -p ./publish/osx-arm64/bin
+        mv yt-dlp-bin ./publish/osx-arm64/bin/yt-dlp
+        chmod +x ./publish/osx-arm64/bin/yt-dlp
     - uses: actions/upload-artifact@v4
       with:
         name: publish-osx-arm64

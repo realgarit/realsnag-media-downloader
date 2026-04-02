@@ -7,13 +7,12 @@ obj/
 *.suo
 *.userosscache
 *.sln.docstates
-.wix/
 
 # Visual Studio
 .vs/
 *.userprefs
 
-# Linux
+# macOS
 .DS_Store
 
 # Windows
@@ -31,4 +30,6 @@ Desktop.ini
 # Release packages
 *.zip
 publish/
-Installer/
+
+# Bundled tools (downloaded at build/runtime)
+Tools/

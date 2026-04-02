@@ -17,23 +17,23 @@ public class SettingsService
     public event EventHandler<LanguageChangedEventArgs>? LanguageChanged;
 
     private bool _isDarkTheme = true;
-    private string _language = "de";
-    private string _outputDirectory = "";
-    private bool _isDarkMode = true;
+    private string _language = "en";
+    private string _outputDirectory = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+    private bool _autoUpdateYtDlp = true;
 
     public SettingsService()
     {
         var appDataPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "realsnag-media-downloader");
-        
+
         Directory.CreateDirectory(appDataPath);
         _settingsPath = Path.Combine(appDataPath, "settings.json");
-        
+
         Load();
     }
 
-    // Properties
     public bool IsDarkTheme
     {
         get => _isDarkTheme;
@@ -75,14 +75,14 @@ public class SettingsService
         }
     }
 
-    public bool IsDarkMode
+    public bool AutoUpdateYtDlp
     {
-        get => _isDarkMode;
+        get => _autoUpdateYtDlp;
         set
         {
-            if (_isDarkMode != value)
+            if (_autoUpdateYtDlp != value)
             {
-                _isDarkMode = value;
+                _autoUpdateYtDlp = value;
                 Save();
             }
         }
@@ -90,14 +90,9 @@ public class SettingsService
 
     public void ApplyTheme(Application application)
     {
-        if (IsDarkTheme)
-        {
-            application.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
-        }
-        else
-        {
-            application.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
-        }
+        application.RequestedThemeVariant = IsDarkTheme
+            ? Avalonia.Styling.ThemeVariant.Dark
+            : Avalonia.Styling.ThemeVariant.Light;
     }
 
     public void ApplyLanguage()
@@ -118,9 +113,10 @@ public class SettingsService
                 if (settings != null)
                 {
                     _isDarkTheme = settings.IsDarkTheme;
-                    _language = settings.Language ?? "de";
-                    _outputDirectory = settings.OutputDirectory ?? "";
-                    _isDarkMode = settings.IsDarkMode;
+                    _language = settings.Language ?? "en";
+                    if (!string.IsNullOrWhiteSpace(settings.OutputDirectory))
+                        _outputDirectory = settings.OutputDirectory;
+                    _autoUpdateYtDlp = settings.AutoUpdateYtDlp;
                 }
             }
         }
@@ -139,9 +135,9 @@ public class SettingsService
                 IsDarkTheme = _isDarkTheme,
                 Language = _language,
                 OutputDirectory = _outputDirectory,
-                IsDarkMode = _isDarkMode
+                AutoUpdateYtDlp = _autoUpdateYtDlp
             };
-            
+
             var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_settingsPath, json);
         }
@@ -156,7 +152,7 @@ public class SettingsService
         public bool IsDarkTheme { get; set; } = true;
         public string? Language { get; set; }
         public string? OutputDirectory { get; set; }
-        public bool IsDarkMode { get; set; } = true;
+        public bool AutoUpdateYtDlp { get; set; } = true;
     }
 }
 

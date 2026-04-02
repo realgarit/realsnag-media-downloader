@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="realsnag_media_downloader.Views.SetupWindow"
+        Title="Setting Up"
+        Width="400"
+        Height="200"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="BorderOnly">
+
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" Margin="32">
+        <TextBlock Text="Realgar Media Downloader" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" />
+        <TextBlock Name="StatusLabel" Text="Downloading yt-dlp..." FontSize="13" HorizontalAlignment="Center" Opacity="0.7" />
+        <ProgressBar Name="SetupProgress" IsIndeterminate="True" Height="6" CornerRadius="3" Width="300" />
+        <TextBlock Name="ErrorLabel" Text="" FontSize="12" Foreground="Red" HorizontalAlignment="Center"
+                   TextWrapping="Wrap" IsVisible="False" />
+    </StackPanel>
+
+</Window>

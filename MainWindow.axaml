@@ -1,150 +1,227 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:services="using:realsnag_media_downloader.Services"
-        xmlns:controls="using:realsnag_media_downloader.Controls"
+        xmlns:vm="using:realsnag_media_downloader.ViewModels"
         x:Class="realsnag_media_downloader.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="Realgar Media Downloader"
-        Width="700"
-        Height="600"
-        MinWidth="700"
-        MinHeight="600">
-<Window.Resources>
-    <!-- Trash Icon Geometry -->
-    <StreamGeometry x:Key="TrashIconGeometry">
-        M24,7.25 C27.1017853,7.25 29.629937,9.70601719 29.7458479,12.7794443 L29.75,13 L37,13 C37.6903559,13 38.25,13.5596441 38.25,14.25 C38.25,14.8972087 37.7581253,15.4295339 37.1278052,15.4935464 L37,15.5 L35.909,15.5 L34.2058308,38.0698451 C34.0385226,40.2866784 32.1910211,42 29.9678833,42 L18.0321167,42 C15.8089789,42 13.9614774,40.2866784 13.7941692,38.0698451 L12.09,15.5 L11,15.5 C10.3527913,15.5 9.8204661,15.0081253 9.75645361,14.3778052 L9.75,14.25 C9.75,13.6027913 10.2418747,13.0704661 10.8721948,13.0064536 L11,13 L18.25,13 C18.25,9.82436269 20.8243627,7.25 24,7.25 Z M33.4021054,15.5 L14.5978946,15.5 L16.2870795,37.8817009 C16.3559711,38.7945146 17.116707,39.5 18.0321167,39.5 L29.9678833,39.5 C30.883293,39.5 31.6440289,38.7945146 31.7129205,37.8817009 L33.4021054,15.5 Z M27.25,20.75 C27.8972087,20.75 28.4295339,21.2418747 28.4935464,21.8721948 L28.5,22 L28.5,33 C28.5,33.6903559 27.9403559,34.25 27.25,34.25 C26.6027913,34.25 26.0704661,33.7581253 26.0064536,33.1278052 L26,33 L26,22 C26,21.3096441 26.5596441,20.75 27.25,20.75 Z M20.75,20.75 C21.3972087,20.75 21.9295339,21.2418747 21.9935464,21.8721948 L22,22 L22,33 C22,33.6903559 21.4403559,34.25 20.75,34.25 C20.1027913,34.25 19.5704661,33.7581253 19.5064536,33.1278052 L19.5,33 L19.5,22 C19.5,21.3096441 20.0596441,20.75 20.75,20.75 Z M24,9.75 C22.2669685,9.75 20.8507541,11.1064548 20.7551448,12.8155761 L20.75,13 L27.25,13 C27.25,11.2050746 25.7949254,9.75 24,9.75 Z
-    </StreamGeometry>
+        Width="780"
+        Height="740"
+        MinWidth="520"
+        MinHeight="500"
+        Background="#18181B">
 
-    <!-- Download Icon Geometry -->
-    <StreamGeometry x:Key="DownloadIconGeometry">
-        M12.25,39.5 L35.75,39.5 C36.4403559,39.5 37,40.0596441 37,40.75 C37,41.3972087 36.5081253,41.9295339 35.8778052,41.9935464 L35.75,42 L12.25,42 C11.5596441,42 11,41.4403559 11,40.75 C11,40.1027913 11.4918747,39.5704661 12.1221948,39.5064536 L12.25,39.5 L35.75,39.5 L12.25,39.5 Z M23.6221948,6.00645361 L23.75,6 C24.3972087,6 24.9295339,6.49187466 24.9935464,7.12219476 L25,7.25 L25,31.54 L30.6466793,25.8942911 C31.1348346,25.4061358 31.9262909,25.4061358 32.4144462,25.8942911 C32.9026016,26.3824465 32.9026016,27.1739027 32.4144462,27.6620581 L24.6362716,35.4402327 C24.1481163,35.928388 23.35666,35.928388 22.8685047,35.4402327 L15.0903301,27.6620581 C14.6021747,27.1739027 14.6021747,26.3824465 15.0903301,25.8942911 C15.5784855,25.4061358 16.3699417,25.4061358 16.858097,25.8942911 L22.5,31.536 L22.5,7.25 C22.5,6.60279131 22.9918747,6.0704661 23.6221948,6.00645361 L23.75,6 L23.6221948,6.00645361 Z
-    </StreamGeometry>
-
-    <!-- Cancel Icon Geometry -->
-    <StreamGeometry x:Key="CancelIconGeometry">
-        M3.52499419,3.71761187 L3.61611652,3.61611652 C4.0717282,3.16050485 4.79154862,3.13013074 5.28238813,3.52499419 L5.38388348,3.61611652 L14,12.233 L22.6161165,3.61611652 C23.1042719,3.12796116 23.8957281,3.12796116 24.3838835,3.61611652 C24.8720388,4.10427189 24.8720388,4.89572811 24.3838835,5.38388348 L15.767,14 L24.3838835,22.6161165 C24.8394952,23.0717282 24.8698693,23.7915486 24.4750058,24.2823881 L24.3838835,24.3838835 C23.9282718,24.8394952 23.2084514,24.8698693 22.7176119,24.4750058 L22.6161165,24.3838835 L14,15.767 L5.38388348,24.3838835 C4.89572811,24.8720388 4.10427189,24.8720388 3.61611652,24.3838835 C3.12796116,23.8957281 3.12796116,23.1042719 3.61611652,22.6161165 L12.233,14 L3.61611652,5.38388348 C3.16050485,4.9282718 3.13013074,4.20845138 3.52499419,3.71761187 L3.61611652,3.61611652 L3.52499419,3.71761187 Z
-    </StreamGeometry>
-
-    <!-- Settings Icon Geometry -->
-    <StreamGeometry x:Key="SettingsIconGeometry">
-        M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z
-    </StreamGeometry>
-</Window.Resources>
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
 
     <Window.Styles>
-        <!-- Modern Button Style -->
-        <Style Selector="Button">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="Margin" Value="4"/>
-        </Style>
-
-        <!-- Button Hover State -->
-        <Style Selector="Button:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
-            <Setter Property="Opacity" Value="0.8"/>
-        </Style>
-
-        <!-- Button Pressed State -->
-        <Style Selector="Button:pressed">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAccentBrush}"/>
-            <Setter Property="Opacity" Value="0.6"/>
-        </Style>
-
-        <!-- Settings Button Special Style -->
-        <Style Selector="Button#SettingsButton">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
-        </Style>
-
-        <Style Selector="Button#SettingsButton:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundChromeMediumBrush}"/>
-            <Setter Property="Opacity" Value="0.8"/>
+        <!-- Form label -->
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="72" />
+            <Setter Property="Foreground" Value="#B0B0B8" />
         </Style>
     </Window.Styles>
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, *, Auto" Margin="10">
-        <!-- Header with Version and Copyright -->
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
-            <TextBlock Name="LinkLabel" Text="Enter Link:" Grid.Column="0" Margin="5"/>
-            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" Margin="5">
-                <TextBlock Name="VersionLabel" Text="v2.0.0" 
-                          FontSize="12" Opacity="0.7" HorizontalAlignment="Right"/>
-                <TextBlock Text="© 2026 Realgar. MIT License." 
-                          FontSize="10" Opacity="0.5" HorizontalAlignment="Right"/>
+    <Window.Resources>
+        <!-- Card background -->
+        <SolidColorBrush x:Key="CardBg" Color="#222228" />
+        <SolidColorBrush x:Key="CardBorder" Color="#2E2E36" />
+        <!-- Button backgrounds -->
+        <SolidColorBrush x:Key="PrimaryBg" Color="#2563EB" />
+        <SolidColorBrush x:Key="SecondaryBg" Color="#3F3F46" />
+        <SolidColorBrush x:Key="SecondaryBorder" Color="#52525B" />
+        <SolidColorBrush x:Key="SubtleBg" Color="#27272A" />
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="14" Margin="28,24" MaxWidth="720" HorizontalAlignment="Center">
+
+            <!-- Header -->
+            <Grid ColumnDefinitions="*, Auto" Margin="0,0,0,6">
+                <StackPanel Spacing="3">
+                    <TextBlock Text="Realgar Media Downloader" FontSize="24" FontWeight="Bold"
+                               Foreground="#FAFAFA" />
+                    <TextBlock Text="{Binding VersionString}" FontSize="11" Foreground="#71717A" />
+                </StackPanel>
+                <Button Grid.Column="1" VerticalAlignment="Center" Name="SettingsButton"
+                        Background="{StaticResource SecondaryBg}" Foreground="#E4E4E7"
+                        BorderBrush="{StaticResource SecondaryBorder}" BorderThickness="1"
+                        CornerRadius="10" Padding="16,8" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                        <PathIcon Width="14" Height="14" VerticalAlignment="Center" Foreground="#A1A1AA"
+                                  Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        <TextBlock Text="Settings" VerticalAlignment="Center" FontSize="13" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- URL Card -->
+            <Border Background="{StaticResource CardBg}" CornerRadius="14" Padding="22,18"
+                    BorderThickness="1" BorderBrush="{StaticResource CardBorder}">
+                <StackPanel Spacing="14">
+                    <TextBox Name="UrlTextBox" Text="{Binding Url}"
+                             Watermark="https://www.youtube.com/watch?v=..."
+                             FontSize="14" CornerRadius="8" />
+
+                    <!-- Thumbnail + metadata -->
+                    <Grid ColumnDefinitions="Auto,*"
+                          IsVisible="{Binding MetadataText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                          Margin="0,2,0,0">
+                        <Border CornerRadius="10" ClipToBounds="True" Width="170" Height="96"
+                                Margin="0,0,16,0" Background="#16161A">
+                            <Image Source="{Binding ThumbnailSource}" Stretch="UniformToFill" />
+                        </Border>
+                        <TextBlock Grid.Column="1" Text="{Binding MetadataText}" TextWrapping="Wrap"
+                                   VerticalAlignment="Center" FontSize="13" LineHeight="22"
+                                   Foreground="#D4D4D8" />
+                    </Grid>
+
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsFetchingMetadata}"
+                                 Height="3" CornerRadius="2" />
+                </StackPanel>
+            </Border>
+
+            <!-- Options Card -->
+            <Border Background="{StaticResource CardBg}" CornerRadius="14" Padding="22,18"
+                    BorderThickness="1" BorderBrush="{StaticResource CardBorder}">
+                <StackPanel Spacing="16">
+
+                    <!-- Format -->
+                    <Grid ColumnDefinitions="72,*">
+                        <TextBlock Text="Format" Classes="label" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="18">
+                            <RadioButton Content="MP4" IsChecked="{Binding IsMp4}" GroupName="Format" />
+                            <RadioButton Content="MP3" GroupName="Format" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Quality -->
+                    <Grid ColumnDefinitions="72,*">
+                        <TextBlock Text="Quality" Classes="label" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Qualities}"
+                                  SelectedItem="{Binding SelectedQuality}"
+                                  HorizontalAlignment="Stretch" MinWidth="200" />
+                    </Grid>
+
+                    <!-- Save to -->
+                    <Grid ColumnDefinitions="72,*,Auto">
+                        <TextBlock Text="Save to" Classes="label" />
+                        <Border Grid.Column="1" Background="{StaticResource SubtleBg}"
+                                CornerRadius="8" Padding="12,7"
+                                VerticalAlignment="Center" Margin="0,0,10,0">
+                            <TextBlock Text="{Binding OutputDirectory}"
+                                       TextTrimming="CharacterEllipsis" FontSize="12"
+                                       Foreground="#A1A1AA" />
+                        </Border>
+                        <Button Grid.Column="2" Name="BrowseButton"
+                                Background="{StaticResource SecondaryBg}" Foreground="#E4E4E7"
+                                BorderBrush="{StaticResource SecondaryBorder}" BorderThickness="1"
+                                CornerRadius="8" Padding="14,6" Cursor="Hand">
+                            <TextBlock Text="Browse" FontSize="12" VerticalAlignment="Center" />
+                        </Button>
+                    </Grid>
+
+                    <Separator Opacity="0.1" Margin="0,2" />
+
+                    <!-- Trim -->
+                    <CheckBox Content="Trim video" IsChecked="{Binding TrimEnabled}" />
+                    <Grid ColumnDefinitions="*,Auto,*" IsVisible="{Binding TrimEnabled}" Margin="28,0,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Start" FontSize="11" Foreground="#71717A" />
+                            <TextBox Text="{Binding TrimStart}" Watermark="00:00:00"
+                                     MaxWidth="160" CornerRadius="8" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" Text="—" VerticalAlignment="Center"
+                                   Margin="14,14,14,0" Foreground="#52525B" FontSize="16" />
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="End" FontSize="11" Foreground="#71717A" />
+                            <TextBox Text="{Binding TrimEnd}" Watermark="00:00:00"
+                                     MaxWidth="160" CornerRadius="8" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Progress Card -->
+            <Border Background="{StaticResource CardBg}" CornerRadius="14" Padding="22,14"
+                    BorderThickness="1" BorderBrush="{StaticResource CardBorder}"
+                    IsVisible="{Binding IsProgressVisible}">
+                <StackPanel Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" FontSize="13"
+                                   Foreground="#E4E4E7" />
+                        <TextBlock Grid.Column="1" Foreground="#71717A" FontSize="12">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0:0}%">
+                                    <Binding Path="ProgressValue" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+                    <ProgressBar Value="{Binding ProgressValue}" Maximum="100" Height="6" CornerRadius="3" />
+                </StackPanel>
+            </Border>
+
+            <!-- Status (idle) -->
+            <TextBlock Margin="4,0" FontSize="13" Foreground="#71717A"
+                       IsVisible="{Binding !IsProgressVisible}">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="Status: {0}">
+                        <Binding Path="StatusText" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+
+            <!-- Logs -->
+            <Expander Header="Logs" IsExpanded="False">
+                <TextBox Text="{Binding LogText}" IsReadOnly="True" AcceptsReturn="True"
+                         TextWrapping="Wrap" MaxHeight="220" MinHeight="80" FontSize="11"
+                         FontFamily="Cascadia Code, Consolas, Menlo, monospace"
+                         CornerRadius="8" />
+            </Expander>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,8">
+                <!-- Download -->
+                <Button Command="{Binding DownloadCommand}" IsEnabled="{Binding !IsDownloading}"
+                        Background="{StaticResource PrimaryBg}" Foreground="White"
+                        CornerRadius="10" Padding="24,10" MinWidth="160"
+                        HorizontalContentAlignment="Center" BorderThickness="0" Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <PathIcon Width="14" Height="14" VerticalAlignment="Center"
+                                  Foreground="White"
+                                  Data="M12,2 L12,13.2 L16.6,8.6 L18,10 L11,17 L4,10 L5.4,8.6 L10,13.2 L10,2 Z M2,20 L20,20 L20,22 L2,22 Z" />
+                        <TextBlock Text="Download" VerticalAlignment="Center"
+                                   FontWeight="SemiBold" FontSize="14" />
+                    </StackPanel>
+                </Button>
+                <!-- Cancel -->
+                <Button Command="{Binding CancelDownloadCommand}" IsEnabled="{Binding IsDownloading}"
+                        Background="{StaticResource SecondaryBg}" Foreground="#E4E4E7"
+                        BorderBrush="{StaticResource SecondaryBorder}" BorderThickness="1"
+                        CornerRadius="10" Padding="18,9" MinWidth="100"
+                        HorizontalContentAlignment="Center" Cursor="Hand">
+                    <TextBlock Text="Cancel" VerticalAlignment="Center" FontSize="13" />
+                </Button>
+                <!-- Clear Logs -->
+                <Button Command="{Binding ClearLogsCommand}"
+                        Background="{StaticResource SecondaryBg}" Foreground="#E4E4E7"
+                        BorderBrush="{StaticResource SecondaryBorder}" BorderThickness="1"
+                        CornerRadius="10" Padding="18,9" MinWidth="110"
+                        HorizontalContentAlignment="Center" Cursor="Hand">
+                    <TextBlock Text="Clear Logs" VerticalAlignment="Center" FontSize="13" />
+                </Button>
             </StackPanel>
-        </Grid>
-        <TextBox Name="LinkTextBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5" TextChanged="OnLinkTextChanged"/>
 
-        <!-- Video Preview -->
-        <Grid Grid.Row="2" Margin="5" ColumnDefinitions="Auto, *">
-            <Image Name="ThumbnailImage" Width="150" Height="150" Margin="5" Grid.Column="0"/>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Column="1" Margin="10">
-                <TextBlock Name="MetadataTextBlock" Text="Media metadata will appear here after you paste the link" 
-                          TextWrapping="Wrap" VerticalAlignment="Top"/>
-            </ScrollViewer>
-        </Grid>
+            <!-- Footer -->
+            <TextBlock Text="© 2026 Realgar. MIT License." FontSize="10" Foreground="#3F3F46"
+                       HorizontalAlignment="Center" Margin="0,2,0,10" />
 
-        <!-- Format Selection -->
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="5,10,0,0">
-            <TextBlock Name="FormatLabel" Text="Select Format:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <RadioButton Name="Mp4RadioButton" Content="MP4" IsChecked="True" Margin="10,0"/>
-            <RadioButton Name="Mp3RadioButton" Content="MP3" Margin="10,0"/>
         </StackPanel>
-
-        <!-- Status and Progress -->
-        <Grid Grid.Row="4" Margin="5,10,0,0" ColumnDefinitions="Auto, Auto, *">
-            <TextBlock Name="StatusTextLabel" Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0" Grid.Column="0"/>
-            <TextBlock Name="StatusLabel" Text="Idle" VerticalAlignment="Center" Grid.Column="1"/>
-            <ProgressBar Name="ProgressBar" Height="20" IsVisible="False" Margin="20,0,0,0" Grid.Column="2"/>
-        </Grid>
-
-        <!-- Logs -->
-        <TextBlock Name="LogsLabel" Text="Logs:" Grid.Row="5" Margin="5,0,0,0"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Grid.Row="6" Margin="5">
-            <TextBox Name="LogsTextBox" AcceptsReturn="True" TextWrapping="Wrap" IsReadOnly="True"/>
-        </ScrollViewer>
-
-        <!-- Buttons -->
-        <StackPanel Orientation="Horizontal" Grid.Row="7" HorizontalAlignment="Center" Margin="10">
-            <!-- Download Button -->
-            <Button Name="DownloadButton" MinWidth="160" MaxWidth="200">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource DownloadIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="DownloadButtonText" Text="Download" TextWrapping="Wrap" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-
-            <!-- Cancel Button -->
-            <Button Name="CancelButton" MinWidth="120" MaxWidth="160">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource CancelIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="CancelButtonText" Text="Cancel" TextWrapping="Wrap" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-
-            <!-- Clear Logs Button -->
-            <Button Name="ClearLogsButton" MinWidth="140" MaxWidth="180">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource TrashIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="ClearLogsButtonText" Text="Clear Logs" TextWrapping="Wrap" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-
-            <!-- Settings Button -->
-            <Button Name="SettingsButton" MinWidth="140" MaxWidth="180">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <PathIcon Data="{StaticResource SettingsIconGeometry}" Width="20" Height="20" Margin="0,0,5,0"/>
-                    <TextBlock Name="SettingsButtonText" Text="Settings" TextWrapping="Wrap" TextAlignment="Center"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
-    </Grid>
+    </ScrollViewer>
 
 </Window>

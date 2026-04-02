@@ -1,10 +1,9 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Themes.Fluent;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using realsnag_media_downloader;
 using realsnag_media_downloader.Services;
+using realsnag_media_downloader.Views;
 
 namespace realsnag_media_downloader;
 
@@ -13,46 +12,40 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        
-        // Initialize services
+
         SettingsService.Instance.ApplyLanguage();
         SettingsService.Instance.ApplyTheme(this);
-        
-        // Subscribe to theme changes
-        SettingsService.Instance.ThemeChanged += OnThemeChanged;
-    }
-
-    private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
-    {
-        ApplyTheme(this);
-    }
-
-    private void ApplyTheme(Application application)
-    {
-        if (SettingsService.Instance.IsDarkTheme)
+        SettingsService.Instance.ThemeChanged += (_, _) =>
         {
-            application.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
-        }
-        else
-        {
-            application.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
-        }
+            RequestedThemeVariant = SettingsService.Instance.IsDarkTheme
+                ? Avalonia.Styling.ThemeVariant.Dark
+                : Avalonia.Styling.ThemeVariant.Light;
+        };
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
-        // Line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and
-        // FluentValidation
         BindingPlugins.DataValidators.RemoveAt(0);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // Check if yt-dlp needs to be set up
+            if (!ToolManager.Instance.IsYtDlpInstalled())
+            {
+                var setupWindow = new SetupWindow();
+                desktop.MainWindow = setupWindow;
+                setupWindow.Show();
+                await setupWindow.RunSetupAsync();
+            }
+
+            // Auto-update check in background (fire and forget)
+            if (SettingsService.Instance.AutoUpdateYtDlp && ToolManager.Instance.IsYtDlpInstalled())
+            {
+                _ = ToolManager.Instance.UpdateYtDlpAsync();
+            }
+
             desktop.MainWindow = new MainWindow();
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainWindow();
+            desktop.MainWindow.Show();
         }
 
         base.OnFrameworkInitializationCompleted();

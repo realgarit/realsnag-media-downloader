@@ -1,67 +1,73 @@
 # RealSnag Media Downloader
 
-A media downloader application built with Avalonia UI.
+A cross-platform media downloader built with Avalonia UI and yt-dlp.
 
 ## Features
 
-- Download media content in MP4 and MP3 formats
-- Automatic metadata fetching and thumbnail display
-- Progress tracking with real-time updates
-- Bundled tools - No need to install yt-dlp or ffmpeg separately
-- Multi-language support (English/German)
-- Dark/Light theme switching
-- Modern, responsive UI design
+- Download video (MP4) and audio (MP3) from YouTube and other sites
+- Quality selection — choose 4K, 1080p, 720p, or best available
+- Video trimming — cut start/end times before downloading
+- Automatic metadata fetching with thumbnail preview
+- Progress tracking with real-time log output
+- User-configurable download directory
+- Bundled yt-dlp with auto-update from GitHub releases
+- Multi-language support (English / German)
+- Dark / Light theme
+- Cross-platform: Windows, macOS (Intel & Apple Silicon), Linux
 
-## Prerequisites
+## Download
 
-### For Development
+Grab the latest zip for your platform from the [Releases](../../releases) page. Extract and run — no installation required.
 
-- .NET 9.0 SDK
-- Visual Studio 2022 or VS Code (optional)
+| Platform | File |
+|----------|------|
+| Windows x64 | `win-x64.zip` |
+| macOS Intel | `osx-x64.zip` |
+| macOS Apple Silicon | `osx-arm64.zip` |
+| Linux x64 | `linux-x64.zip` |
 
-### For End Users
+The app is self-contained — .NET runtime and yt-dlp are bundled. **ffmpeg** is required for merging video+audio streams (4K, 1080p, etc.). Install via your package manager:
 
-**No additional software required!** The application is distributed as a self-contained installer that includes everything needed:
-
-- **.NET 9.0 Runtime** - Bundled with the application
-- **yt-dlp** - Media downloader (bundled)
-- **ffmpeg** - Audio/video processing (bundled)
-
-Simply download and run the MSI installer - no manual .NET installation needed!
+- macOS: `brew install ffmpeg`
+- Linux: `sudo apt install ffmpeg` (or equivalent)
+- Windows: [ffmpeg.org/download](https://ffmpeg.org/download.html) or `choco install ffmpeg`
 
 ## Usage
 
-1. Paste a media link in the input field
-2. Select your preferred format (MP4 or MP3)
-3. Click Download to start the process
-4. Monitor progress in the logs section
+1. Paste a media URL
+2. Select format (MP4 / MP3) and quality
+3. Optionally enable video trimming with start/end times
+4. Click **Download**
 
-### Settings
+Files are saved to `~/Downloads` by default. Change the path via the **Browse** button or in **Settings**.
 
-Access the settings panel by clicking the settings button to:
-- Switch between Dark and Light themes
-- Change language between English and German
+## Development
 
-## Installation
+### Prerequisites
 
-Download the latest MSI installer from the releases page and run it. The installer will:
-- Install to `C:\Program Files\RealSnag Media Downloader\`
-- Include all .NET 9.0 runtime files (self-contained)
-- Create desktop and Start Menu shortcuts
-- Show MIT license agreement
-- Support silent installation
-- Provide clean uninstallation
+- .NET 10.0 SDK
 
-**No prerequisites required** - everything is included in the installer!
+### Build & Run
 
-## Technical Details
+```bash
+dotnet restore
+dotnet run
+```
 
-- Built with .NET 9.0 and Avalonia UI
-- Self-contained deployment with bundled tools
-- Auto-detects tool locations (bundled tools take priority)
-- Cross-platform tool detection for maximum compatibility
-- Professional MSI installer with proper Windows integration
-- Version: v1.1.0
+### Cross-platform publish
+
+```bash
+dotnet publish -c Release -r osx-arm64 --self-contained true -o ./publish/osx-arm64
+dotnet publish -c Release -r win-x64 --self-contained true -o ./publish/win-x64
+dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish/linux-x64
+```
+
+## Tech Stack
+
+- [Avalonia UI](https://avaloniaui.net/) 11.3.7 — cross-platform .NET UI framework
+- [Semi.Avalonia](https://github.com/irihitech/Semi.Avalonia) — modern theme
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) — media downloader (MIT licensed, bundled)
+- [CommunityToolkit.Mvvm](https://learn.microsoft.com/en-us/dotnet/communitytoolkit/mvvm/) — MVVM helpers
 
 ## License
 
