@@ -18,6 +18,9 @@ public partial class MainWindowViewModel : ObservableObject
     private static readonly HttpClient _httpClient = new();
     private CancellationTokenSource? _metadataCts;
     private System.Timers.Timer? _debounceTimer;
+    private DateTime _lastLogUpdate = DateTime.MinValue;
+    private string _logBuffer = string.Empty;
+    private const int MaxLogLength = 50_000;
 
     [ObservableProperty] private string _url = string.Empty;
     [ObservableProperty] private string _statusText = "Ready";
@@ -208,9 +211,21 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void AppendLog(string message)
     {
+        _logBuffer += message + "\n";
+
+        // Throttle UI updates to avoid freezing on large downloads
+        var now = DateTime.UtcNow;
+        if ((now - _lastLogUpdate).TotalMilliseconds < 200) return;
+        _lastLogUpdate = now;
+
+        var text = _logBuffer;
+        // Cap log size to prevent memory/UI issues
+        if (text.Length > MaxLogLength)
+            text = "... (earlier logs trimmed)\n" + text[^MaxLogLength..];
+
         Dispatcher.UIThread.InvokeAsync(() =>
         {
-            LogText += message + "\n";
+            LogText = text;
         });
     }
 }

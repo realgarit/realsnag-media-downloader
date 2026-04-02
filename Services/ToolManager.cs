@@ -175,10 +175,11 @@ public class ToolManager
     {
         if (_cachedFfmpegPath != null) return _cachedFfmpegPath;
 
-        // Try system PATH first
-        if (TryFindExecutable("ffmpeg"))
+        // Try to resolve full path from PATH (yt-dlp needs absolute path)
+        var resolved = ResolveExecutablePath("ffmpeg");
+        if (resolved != null)
         {
-            _cachedFfmpegPath = "ffmpeg";
+            _cachedFfmpegPath = resolved;
             return _cachedFfmpegPath;
         }
 
@@ -230,6 +231,30 @@ public class ToolManager
     {
         var path = GetFfmpegPath();
         return TryFindExecutable(path);
+    }
+
+    private static string? ResolveExecutablePath(string name)
+    {
+        try
+        {
+            var cmd = OperatingSystem.IsWindows() ? "where" : "which";
+            var psi = new ProcessStartInfo
+            {
+                FileName = cmd,
+                Arguments = name,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var process = Process.Start(psi);
+            if (process == null) return null;
+            var output = process.StandardOutput.ReadLine()?.Trim();
+            process.WaitForExit(3000);
+            if (process.ExitCode == 0 && !string.IsNullOrEmpty(output) && File.Exists(output))
+                return output;
+        }
+        catch { }
+        return null;
     }
 
     private static string GetYtDlpAssetName()
