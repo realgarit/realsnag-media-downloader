@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
@@ -25,6 +26,41 @@ public class ToolManager
     private string? _cachedFfmpegPath;
 
     public string BinDirectory { get; }
+
+    /// <summary>
+    /// Returns a PATH string that includes common tool locations.
+    /// macOS GUI apps don't inherit the shell PATH, so Homebrew etc. aren't found.
+    /// </summary>
+    public static string GetEnrichedPath()
+    {
+        var current = Environment.GetEnvironmentVariable("PATH") ?? "";
+        var extras = new List<string>();
+
+        if (OperatingSystem.IsMacOS())
+        {
+            extras.AddRange(["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin"]);
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            extras.AddRange(["/usr/local/bin", "/usr/bin", "/bin"]);
+        }
+
+        foreach (var p in extras)
+        {
+            if (!current.Contains(p))
+                current = p + Path.PathSeparator + current;
+        }
+
+        return current;
+    }
+
+    /// <summary>
+    /// Applies the enriched PATH to a ProcessStartInfo so child processes can find tools.
+    /// </summary>
+    public static void ApplyEnvironment(ProcessStartInfo psi)
+    {
+        psi.Environment["PATH"] = GetEnrichedPath();
+    }
 
     public ToolManager()
     {

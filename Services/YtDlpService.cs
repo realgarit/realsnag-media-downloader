@@ -51,6 +51,7 @@ public partial class YtDlpService
             UseShellExecute = false,
             CreateNoWindow = true
         };
+        ToolManager.ApplyEnvironment(psi);
 
         using var process = Process.Start(psi)
             ?? throw new Exception("Failed to start yt-dlp.");
@@ -154,18 +155,17 @@ public partial class YtDlpService
         var arguments = string.Join(" ", args);
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        _currentProcess = new Process
+        var downloadPsi = new ProcessStartInfo
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = ytdlp,
-                Arguments = arguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
+            FileName = ytdlp,
+            Arguments = arguments,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
         };
+        ToolManager.ApplyEnvironment(downloadPsi);
+        _currentProcess = new Process { StartInfo = downloadPsi };
 
         try
         {
