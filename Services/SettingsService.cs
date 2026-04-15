@@ -1,16 +1,16 @@
 using System;
 using System.IO;
-using System.Text.Json;
 using System.Globalization;
+using System.Text.Json;
 using Avalonia;
+using Microsoft.Extensions.Logging;
+using realsnag_media_downloader.Models;
 
 namespace realsnag_media_downloader.Services;
 
-public class SettingsService
+public class SettingsService : ISettingsService
 {
-    private static readonly Lazy<SettingsService> _instance = new(() => new SettingsService());
-    public static SettingsService Instance => _instance.Value;
-
+    private readonly ILogger<SettingsService> _logger;
     private readonly string _settingsPath;
 
     public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
@@ -22,8 +22,10 @@ public class SettingsService
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
     private bool _autoUpdateYtDlp = true;
 
-    public SettingsService()
+    public SettingsService(ILogger<SettingsService> logger)
     {
+        _logger = logger;
+
         var appDataPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "realsnag-media-downloader");
@@ -120,9 +122,13 @@ public class SettingsService
                 }
             }
         }
-        catch
+        catch (JsonException ex)
         {
-            // Use defaults on error
+            _logger.LogWarning(ex, "Failed to parse settings file, using defaults");
+        }
+        catch (IOException ex)
+        {
+            _logger.LogWarning(ex, "Failed to read settings file, using defaults");
         }
     }
 
@@ -141,18 +147,10 @@ public class SettingsService
             var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_settingsPath, json);
         }
-        catch
+        catch (IOException ex)
         {
-            // Ignore save errors
+            _logger.LogError(ex, "Failed to save settings");
         }
-    }
-
-    private class SettingsData
-    {
-        public bool IsDarkTheme { get; set; } = true;
-        public string? Language { get; set; }
-        public string? OutputDirectory { get; set; }
-        public bool AutoUpdateYtDlp { get; set; } = true;
     }
 }
 

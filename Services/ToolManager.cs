@@ -4,28 +4,35 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace realsnag_media_downloader.Services;
 
-public class ToolManager
+public class ToolManager : IToolManager
 {
-    private static readonly Lazy<ToolManager> _instance = new(() => new ToolManager());
-    public static ToolManager Instance => _instance.Value;
-
     private static readonly HttpClient _httpClient = new()
     {
         DefaultRequestHeaders =
         {
             { "User-Agent", "realsnag-media-downloader" }
-        }
+        },
+        Timeout = TimeSpan.FromSeconds(30)
     };
+
+    private readonly ILogger<ToolManager> _logger;
     private string? _cachedFfmpegPath;
 
     public string BinDirectory { get; }
+
+    public ToolManager(ILogger<ToolManager> logger)
+    {
+        _logger = logger;
+        BinDirectory = Path.Combine(GetAppDataDir(), "bin");
+        Directory.CreateDirectory(BinDirectory);
+    }
 
     /// <summary>
     /// Returns a PATH string that includes common tool locations.
@@ -54,18 +61,9 @@ public class ToolManager
         return current;
     }
 
-    /// <summary>
-    /// Applies the enriched PATH to a ProcessStartInfo so child processes can find tools.
-    /// </summary>
-    public static void ApplyEnvironment(ProcessStartInfo psi)
+    public void ApplyEnvironment(ProcessStartInfo psi)
     {
         psi.Environment["PATH"] = GetEnrichedPath();
-    }
-
-    public ToolManager()
-    {
-        BinDirectory = Path.Combine(GetAppDataDir(), "bin");
-        Directory.CreateDirectory(BinDirectory);
     }
 
     private static string GetAppDataDir()
@@ -78,7 +76,6 @@ public class ToolManager
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".local", "share", "realsnag-media-downloader");
-        // Windows
         return Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "realsnag-media-downloader");
@@ -90,11 +87,9 @@ public class ToolManager
         {
             var name = OperatingSystem.IsWindows() ? "yt-dlp.exe" : "yt-dlp";
 
-            // Check bundled location next to app binary first (CI/CD distributed)
             var bundledPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin", name);
             if (File.Exists(bundledPath)) return bundledPath;
 
-            // Fall back to app data directory (auto-downloaded)
             return Path.Combine(BinDirectory, name);
         }
     }
@@ -117,11 +112,21 @@ public class ToolManager
             using var process = Process.Start(psi);
             if (process == null) return "Unknown";
             var version = await process.StandardOutput.ReadLineAsync();
-            await process.WaitForExitAsync();
+            if (!process.WaitForExit(5000))
+            {
+                _logger.LogWarning("yt-dlp version check timed out");
+                return "Unknown";
+            }
             return version?.Trim() ?? "Unknown";
         }
-        catch
+        catch (IOException ex)
         {
+            _logger.LogWarning(ex, "Failed to check yt-dlp version");
+            return "Unknown";
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Failed to start yt-dlp for version check");
             return "Unknown";
         }
     }
@@ -130,13 +135,24 @@ public class ToolManager
     {
         try
         {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             var json = await _httpClient.GetFromJsonAsync<JsonElement>(
-                "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest",
-                new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
+                "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest", cts.Token);
             return json.GetProperty("tag_name").GetString();
         }
-        catch
+        catch (HttpRequestException ex)
         {
+            _logger.LogWarning(ex, "Failed to check latest yt-dlp version (network error)");
+            return null;
+        }
+        catch (TaskCanceledException)
+        {
+            _logger.LogWarning("Latest yt-dlp version check timed out");
+            return null;
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogWarning(ex, "Failed to parse yt-dlp release JSON");
             return null;
         }
     }
@@ -144,11 +160,15 @@ public class ToolManager
     public async Task DownloadYtDlpAsync(IProgress<string>? progress = null, CancellationToken ct = default)
     {
         progress?.Report("Checking latest yt-dlp version...");
+        _logger.LogInformation("Downloading yt-dlp...");
 
-        // Get the download URL for the current platform
         var assetName = GetYtDlpAssetName();
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(TimeSpan.FromMinutes(2));
+
         var json = await _httpClient.GetFromJsonAsync<JsonElement>(
-            "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest", ct);
+            "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest", cts.Token);
 
         string? downloadUrl = null;
         foreach (var asset in json.GetProperty("assets").EnumerateArray())
@@ -161,35 +181,35 @@ public class ToolManager
         }
 
         if (downloadUrl == null)
-            throw new Exception($"Could not find yt-dlp binary '{assetName}' in latest release.");
+            throw new InvalidOperationException($"Could not find yt-dlp binary '{assetName}' in latest release.");
 
         progress?.Report($"Downloading {assetName}...");
 
-        var response = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, ct);
+        var response = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, cts.Token);
         response.EnsureSuccessStatusCode();
 
         var totalBytes = response.Content.Headers.ContentLength ?? -1;
-        await using var stream = await response.Content.ReadAsStreamAsync(ct);
+        await using var stream = await response.Content.ReadAsStreamAsync(cts.Token);
         await using var fileStream = new FileStream(YtDlpPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
         var buffer = new byte[81920];
         long downloaded = 0;
         int bytesRead;
-        while ((bytesRead = await stream.ReadAsync(buffer, ct)) > 0)
+        while ((bytesRead = await stream.ReadAsync(buffer, cts.Token)) > 0)
         {
-            await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), ct);
+            await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cts.Token);
             downloaded += bytesRead;
             if (totalBytes > 0)
                 progress?.Report($"Downloading... {downloaded * 100 / totalBytes}%");
         }
 
-        // Set executable permission on Unix
         if (!OperatingSystem.IsWindows())
         {
             var chmod = Process.Start("chmod", $"+x \"{YtDlpPath}\"");
-            if (chmod != null) await chmod.WaitForExitAsync(ct);
+            if (chmod != null) await chmod.WaitForExitAsync(cts.Token);
         }
 
+        _logger.LogInformation("yt-dlp installed successfully at {Path}", YtDlpPath);
         progress?.Report("yt-dlp installed successfully.");
     }
 
@@ -200,6 +220,7 @@ public class ToolManager
 
         if (latestVersion != null && currentVersion == latestVersion)
         {
+            _logger.LogDebug("yt-dlp already up to date ({Version})", currentVersion);
             progress?.Report($"Already up to date ({currentVersion}).");
             return;
         }
@@ -211,25 +232,16 @@ public class ToolManager
     {
         if (_cachedFfmpegPath != null) return _cachedFfmpegPath;
 
-        // Try common known locations first (most reliable)
         string[] commonPaths;
         if (OperatingSystem.IsMacOS())
         {
-            commonPaths =
-            [
-                "/opt/homebrew/bin/ffmpeg",
-                "/usr/local/bin/ffmpeg"
-            ];
+            commonPaths = ["/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg"];
         }
         else if (OperatingSystem.IsLinux())
         {
-            commonPaths =
-            [
-                "/usr/bin/ffmpeg",
-                "/usr/local/bin/ffmpeg"
-            ];
+            commonPaths = ["/usr/bin/ffmpeg", "/usr/local/bin/ffmpeg"];
         }
-        else // Windows
+        else
         {
             commonPaths =
             [
@@ -245,20 +257,21 @@ public class ToolManager
         {
             if (File.Exists(path))
             {
+                _logger.LogDebug("Found ffmpeg at {Path}", path);
                 _cachedFfmpegPath = path;
                 return _cachedFfmpegPath;
             }
         }
 
-        // Try resolving from PATH via which/where
         var resolved = ResolveExecutablePath("ffmpeg");
         if (resolved != null)
         {
+            _logger.LogDebug("Resolved ffmpeg via PATH at {Path}", resolved);
             _cachedFfmpegPath = resolved;
             return _cachedFfmpegPath;
         }
 
-        // Last resort fallback
+        _logger.LogWarning("ffmpeg not found, falling back to bare command name");
         _cachedFfmpegPath = "ffmpeg";
         return _cachedFfmpegPath;
     }
@@ -289,7 +302,8 @@ public class ToolManager
             if (process.ExitCode == 0 && !string.IsNullOrEmpty(output) && File.Exists(output))
                 return output;
         }
-        catch { }
+        catch (IOException) { }
+        catch (InvalidOperationException) { }
         return null;
     }
 
@@ -320,9 +334,8 @@ public class ToolManager
             process.WaitForExit(3000);
             return process.ExitCode == 0;
         }
-        catch
-        {
-            return false;
-        }
+        catch (IOException) { return false; }
+        catch (InvalidOperationException) { return false; }
+        catch (System.ComponentModel.Win32Exception) { return false; }
     }
 }

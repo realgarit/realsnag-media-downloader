@@ -7,10 +7,15 @@ namespace realsnag_media_downloader.Views;
 
 public partial class SetupWindow : Window
 {
+    private readonly IToolManager _toolManager;
+    private readonly ILocalizationService _localization;
+
     public bool SetupSucceeded { get; private set; }
 
-    public SetupWindow()
+    public SetupWindow(IToolManager toolManager, ILocalizationService localization)
     {
+        _toolManager = toolManager;
+        _localization = localization;
         InitializeComponent();
     }
 
@@ -27,9 +32,9 @@ public partial class SetupWindow : Window
                 statusLabel.Text = msg;
             });
 
-            await ToolManager.Instance.DownloadYtDlpAsync(progress);
+            await _toolManager.DownloadYtDlpAsync(progress);
 
-            statusLabel.Text = LocalizationService.Instance.GetString("SetupComplete");
+            statusLabel.Text = _localization.GetString("SetupComplete");
             progressBar.IsIndeterminate = false;
             progressBar.Value = 100;
             SetupSucceeded = true;
@@ -39,12 +44,11 @@ public partial class SetupWindow : Window
         }
         catch (Exception ex)
         {
-            statusLabel.Text = LocalizationService.Instance.GetString("SetupFailed");
+            statusLabel.Text = _localization.GetString("SetupFailed");
             errorLabel.Text = ex.Message;
             errorLabel.IsVisible = true;
             progressBar.IsIndeterminate = false;
 
-            // Let user see the error, then close after 5 seconds
             await Task.Delay(5000);
             Close();
         }

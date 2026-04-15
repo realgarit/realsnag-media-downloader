@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Microsoft.Extensions.DependencyInjection;
 using realsnag_media_downloader.Services;
 using realsnag_media_downloader.Views;
 
@@ -13,13 +14,26 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
 
-        SettingsService.Instance.ApplyLanguage();
-        SettingsService.Instance.ApplyTheme(this);
-        SettingsService.Instance.ThemeChanged += (_, _) =>
+        // Configure DI container before anything else
+        ServiceLocator.Configure();
+
+        var settings = ServiceLocator.GetRequired<ISettingsService>();
+        var localization = ServiceLocator.GetRequired<ILocalizationService>();
+
+        settings.ApplyLanguage();
+        settings.ApplyTheme(this);
+        localization.CurrentLanguage = settings.Language;
+
+        settings.ThemeChanged += (_, _) =>
         {
-            RequestedThemeVariant = SettingsService.Instance.IsDarkTheme
+            RequestedThemeVariant = settings.IsDarkTheme
                 ? Avalonia.Styling.ThemeVariant.Dark
                 : Avalonia.Styling.ThemeVariant.Light;
+        };
+
+        settings.LanguageChanged += (_, e) =>
+        {
+            localization.CurrentLanguage = e.Language;
         };
     }
 
@@ -29,19 +43,20 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Check if yt-dlp needs to be set up
-            if (!ToolManager.Instance.IsYtDlpInstalled())
+            var toolManager = ServiceLocator.GetRequired<IToolManager>();
+            var settings = ServiceLocator.GetRequired<ISettingsService>();
+
+            if (!toolManager.IsYtDlpInstalled())
             {
-                var setupWindow = new SetupWindow();
+                var setupWindow = new SetupWindow(toolManager, ServiceLocator.GetRequired<ILocalizationService>());
                 desktop.MainWindow = setupWindow;
                 setupWindow.Show();
                 await setupWindow.RunSetupAsync();
             }
 
-            // Auto-update check in background (fire and forget)
-            if (SettingsService.Instance.AutoUpdateYtDlp && ToolManager.Instance.IsYtDlpInstalled())
+            if (settings.AutoUpdateYtDlp && toolManager.IsYtDlpInstalled())
             {
-                _ = ToolManager.Instance.UpdateYtDlpAsync();
+                _ = toolManager.UpdateYtDlpAsync();
             }
 
             desktop.MainWindow = new MainWindow();

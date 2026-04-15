@@ -9,13 +9,19 @@
     <RootNamespace>realsnag_media_downloader</RootNamespace>
     <ApplicationTitle>realsnag-media-downloader</ApplicationTitle>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <Version>2.1.4</Version>
-    <AssemblyVersion>2.1.4.0</AssemblyVersion>
-    <FileVersion>2.1.4.0</FileVersion>
+    <Version>2.2.0</Version>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
     <Product>realsnag-media-downloader</Product>
     <Company>Realgar</Company>
     <Copyright>Copyright (c) 2026 Realgar</Copyright>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests/**" />
+    <Content Remove="tests/**" />
+    <None Remove="tests/**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.7" />
@@ -28,6 +34,8 @@
     </PackageReference>
     <PackageReference Include="Semi.Avalonia" Version="11.3.7.3" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
   </ItemGroup>
 
 </Project>
