@@ -1,6 +1,8 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:realsnag_media_downloader.ViewModels"
         x:Class="realsnag_media_downloader.Views.SettingsWindow"
+        x:DataType="vm:SettingsWindowViewModel"
         Title="Settings"
         Width="420"
         Height="480"
@@ -16,8 +18,8 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="Theme" FontWeight="Bold" FontSize="15" />
                 <StackPanel Orientation="Horizontal" Spacing="16">
-                    <RadioButton Name="DarkRadio" Content="Dark" />
-                    <RadioButton Name="LightRadio" Content="Light" />
+                    <RadioButton Content="Dark" IsChecked="{Binding IsDarkTheme}" />
+                    <RadioButton Content="Light" IsChecked="{Binding !IsDarkTheme}" />
                 </StackPanel>
             </StackPanel>
 
@@ -25,8 +27,8 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="Language" FontWeight="Bold" FontSize="15" />
                 <StackPanel Orientation="Horizontal" Spacing="16">
-                    <RadioButton Name="EnglishRadio" Content="English" />
-                    <RadioButton Name="GermanRadio" Content="Deutsch" />
+                    <RadioButton Content="English" IsChecked="{Binding IsEnglish}" />
+                    <RadioButton Content="Deutsch" IsChecked="{Binding !IsEnglish}" />
                 </StackPanel>
             </StackPanel>
 
@@ -35,17 +37,19 @@
             <!-- yt-dlp -->
             <StackPanel Spacing="8">
                 <TextBlock Text="yt-dlp" FontWeight="Bold" FontSize="15" />
-                <TextBlock Name="YtDlpVersionLabel" Text="Version: checking..." FontSize="12" Opacity="0.7" />
+                <TextBlock Text="{Binding YtDlpVersionText}" FontSize="12" Opacity="0.7" />
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <Button Name="UpdateYtDlpButton" Content="Update yt-dlp" />
-                    <CheckBox Name="AutoUpdateCheckBox" Content="Auto-update" VerticalAlignment="Center" />
+                    <Button Content="Update yt-dlp" Command="{Binding UpdateYtDlpCommand}"
+                            IsEnabled="{Binding !IsUpdatingYtDlp}" />
+                    <CheckBox Content="Auto-update" IsChecked="{Binding AutoUpdateYtDlp}"
+                              VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
 
             <!-- ffmpeg -->
             <StackPanel Spacing="4">
                 <TextBlock Text="ffmpeg" FontWeight="Bold" FontSize="15" />
-                <TextBlock Name="FfmpegStatusLabel" Text="Status: checking..." FontSize="12" Opacity="0.7" />
+                <TextBlock Text="{Binding FfmpegStatusText}" FontSize="12" Opacity="0.7" />
             </StackPanel>
 
             <Separator Opacity="0.2" />
@@ -53,7 +57,7 @@
             <!-- About -->
             <StackPanel Spacing="4" Margin="0,0,0,16">
                 <TextBlock Text="About" FontWeight="Bold" FontSize="15" />
-                <TextBlock Text="© 2026 Realgar. MIT License." FontSize="12" Opacity="0.6" />
+                <TextBlock Text="(c) 2026 Realgar. MIT License." FontSize="12" Opacity="0.6" />
                 <TextBlock Text="Built with Avalonia UI and yt-dlp." FontSize="12" Opacity="0.6" />
             </StackPanel>
         </StackPanel>

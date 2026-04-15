@@ -7,41 +7,32 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using realsnag_media_downloader.Models;
 
 namespace realsnag_media_downloader.Services;
 
-public record MediaInfo(
-    string Title,
-    string Duration,
-    string? ThumbnailUrl,
-    List<QualityOption> Qualities);
-
-public record QualityOption(string Label, string FormatArg)
+public partial class YtDlpService : IYtDlpService
 {
-    public override string ToString() => Label;
-}
-
-public record DownloadOptions(
-    string Url,
-    string OutputDir,
-    string Format,
-    string? QualityFormatArg,
-    string? TrimStart,
-    string? TrimEnd);
-
-public record DownloadProgress(double Percentage, string Line);
-
-public partial class YtDlpService
-{
+    private readonly IToolManager _toolManager;
+    private readonly ILogger<YtDlpService> _logger;
     private Process? _currentProcess;
     private CancellationTokenSource? _cts;
 
     [GeneratedRegex(@"(\d+(\.\d+)?)%")]
     private static partial Regex ProgressRegex();
 
+    public YtDlpService(IToolManager toolManager, ILogger<YtDlpService> logger)
+    {
+        _toolManager = toolManager;
+        _logger = logger;
+    }
+
     public async Task<MediaInfo> FetchMetadataAsync(string url, CancellationToken ct = default)
     {
-        var ytdlp = ToolManager.Instance.YtDlpPath;
+        var ytdlp = _toolManager.YtDlpPath;
+        _logger.LogDebug("Fetching metadata for {Url} using {YtDlpPath}", url, ytdlp);
+
         var psi = new ProcessStartInfo
         {
             FileName = ytdlp,
@@ -51,65 +42,90 @@ public partial class YtDlpService
             UseShellExecute = false,
             CreateNoWindow = true
         };
-        ToolManager.ApplyEnvironment(psi);
+        _toolManager.ApplyEnvironment(psi);
 
         using var process = Process.Start(psi)
-            ?? throw new Exception("Failed to start yt-dlp.");
+            ?? throw new InvalidOperationException("Failed to start yt-dlp process.");
 
-        var output = await process.StandardOutput.ReadToEndAsync(ct);
-        await process.WaitForExitAsync(ct);
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
 
-        if (string.IsNullOrWhiteSpace(output))
-            throw new Exception("No metadata received from yt-dlp.");
-
-        var json = JsonDocument.Parse(output);
-        var root = json.RootElement;
-
-        var title = root.TryGetProperty("title", out var t) ? t.GetString() ?? "Unknown" : "Unknown";
-        var duration = root.TryGetProperty("duration_string", out var d) ? d.GetString() ?? "Unknown" : "Unknown";
-        var thumbnail = root.TryGetProperty("thumbnail", out var th) ? th.GetString() : null;
-
-        var qualities = new List<QualityOption>
+        string output;
+        try
         {
-            new("Best Available", "bestvideo+bestaudio/best")
-        };
-
-        if (root.TryGetProperty("formats", out var formats))
+            output = await process.StandardOutput.ReadToEndAsync(timeoutCts.Token);
+            await process.WaitForExitAsync(timeoutCts.Token);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
-            var seen = new HashSet<string>();
-            var formatList = new List<(int Height, string Label, string FormatArg)>();
-
-            foreach (var fmt in formats.EnumerateArray())
-            {
-                if (!fmt.TryGetProperty("height", out var h) || h.ValueKind != JsonValueKind.Number)
-                    continue;
-
-                var height = h.GetInt32();
-                if (height <= 0 || !seen.Add(height.ToString())) continue;
-
-                var label = height switch
-                {
-                    >= 2160 => "4K (2160p)",
-                    >= 1440 => "1440p",
-                    >= 1080 => "1080p",
-                    >= 720 => "720p",
-                    >= 480 => "480p",
-                    >= 360 => "360p",
-                    _ => $"{height}p"
-                };
-
-                formatList.Add((height, label, $"bestvideo[height<={height}]+bestaudio/best[height<={height}]"));
-            }
-
-            foreach (var (_, label, formatArg) in formatList.OrderByDescending(f => f.Height))
-            {
-                qualities.Add(new QualityOption(label, formatArg));
-            }
+            _logger.LogWarning("Metadata fetch timed out for {Url}", url);
+            KillProcess(process);
+            throw new TimeoutException("Metadata fetch timed out after 30 seconds.");
         }
 
-        qualities.Add(new QualityOption("Audio Only", "bestaudio"));
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            _logger.LogWarning("No metadata received from yt-dlp for {Url}", url);
+            throw new InvalidOperationException("No metadata received from yt-dlp.");
+        }
 
-        return new MediaInfo(title, duration, thumbnail, qualities);
+        try
+        {
+            var json = JsonDocument.Parse(output);
+            var root = json.RootElement;
+
+            var title = root.TryGetProperty("title", out var t) ? t.GetString() ?? "Unknown" : "Unknown";
+            var duration = root.TryGetProperty("duration_string", out var d) ? d.GetString() ?? "Unknown" : "Unknown";
+            var thumbnail = root.TryGetProperty("thumbnail", out var th) ? th.GetString() : null;
+
+            var qualities = new List<QualityOption>
+            {
+                new("Best Available", "bestvideo+bestaudio/best")
+            };
+
+            if (root.TryGetProperty("formats", out var formats))
+            {
+                var seen = new HashSet<string>();
+                var formatList = new List<(int Height, string Label, string FormatArg)>();
+
+                foreach (var fmt in formats.EnumerateArray())
+                {
+                    if (!fmt.TryGetProperty("height", out var h) || h.ValueKind != JsonValueKind.Number)
+                        continue;
+
+                    var height = h.GetInt32();
+                    if (height <= 0 || !seen.Add(height.ToString())) continue;
+
+                    var label = height switch
+                    {
+                        >= 2160 => "4K (2160p)",
+                        >= 1440 => "1440p",
+                        >= 1080 => "1080p",
+                        >= 720 => "720p",
+                        >= 480 => "480p",
+                        >= 360 => "360p",
+                        _ => $"{height}p"
+                    };
+
+                    formatList.Add((height, label, $"bestvideo[height<={height}]+bestaudio/best[height<={height}]"));
+                }
+
+                foreach (var (_, label, formatArg) in formatList.OrderByDescending(f => f.Height))
+                {
+                    qualities.Add(new QualityOption(label, formatArg));
+                }
+            }
+
+            qualities.Add(new QualityOption("Audio Only", "bestaudio"));
+
+            _logger.LogInformation("Fetched metadata: {Title} ({Duration})", title, duration);
+            return new MediaInfo(title, duration, thumbnail, qualities);
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogError(ex, "Failed to parse yt-dlp JSON output");
+            throw new InvalidOperationException("Failed to parse media metadata.", ex);
+        }
     }
 
     public async Task RunDownloadAsync(
@@ -117,9 +133,11 @@ public partial class YtDlpService
         IProgress<DownloadProgress>? progress = null,
         CancellationToken ct = default)
     {
-        var ytdlp = ToolManager.Instance.YtDlpPath;
-        var ffmpeg = ToolManager.Instance.GetFfmpegPath();
+        var ytdlp = _toolManager.YtDlpPath;
+        var ffmpeg = _toolManager.GetFfmpegPath();
         var outputTemplate = Path.Combine(opts.OutputDir, "%(title)s.%(ext)s");
+
+        _logger.LogInformation("Starting download: {Url} -> {OutputDir} (format={Format})", opts.Url, opts.OutputDir, opts.Format);
 
         var args = new List<string>
         {
@@ -143,7 +161,6 @@ public partial class YtDlpService
             args.Add($"-f \"{formatArg}\"");
         }
 
-        // Trimming
         if (!string.IsNullOrWhiteSpace(opts.TrimStart) && !string.IsNullOrWhiteSpace(opts.TrimEnd))
         {
             args.Add($"--download-sections \"*{opts.TrimStart}-{opts.TrimEnd}\"");
@@ -164,7 +181,7 @@ public partial class YtDlpService
             UseShellExecute = false,
             CreateNoWindow = true
         };
-        ToolManager.ApplyEnvironment(downloadPsi);
+        _toolManager.ApplyEnvironment(downloadPsi);
         _currentProcess = new Process { StartInfo = downloadPsi };
 
         try
@@ -178,7 +195,12 @@ public partial class YtDlpService
             await _currentProcess.WaitForExitAsync(_cts.Token);
 
             if (_currentProcess.ExitCode != 0)
-                throw new Exception($"yt-dlp exited with code {_currentProcess.ExitCode}");
+            {
+                _logger.LogError("yt-dlp exited with code {ExitCode}", _currentProcess.ExitCode);
+                throw new InvalidOperationException($"yt-dlp exited with code {_currentProcess.ExitCode}");
+            }
+
+            _logger.LogInformation("Download completed successfully");
         }
         finally
         {
@@ -194,11 +216,27 @@ public partial class YtDlpService
         {
             _cts?.Cancel();
             if (_currentProcess is { HasExited: false })
+            {
+                _logger.LogInformation("Cancelling download, killing yt-dlp process");
                 _currentProcess.Kill(true);
+            }
         }
-        catch
+        catch (InvalidOperationException)
         {
-            // Best effort
+            // Process already exited
+        }
+    }
+
+    private static void KillProcess(Process process)
+    {
+        try
+        {
+            if (!process.HasExited)
+                process.Kill(true);
+        }
+        catch (InvalidOperationException)
+        {
+            // Process already exited
         }
     }
 
