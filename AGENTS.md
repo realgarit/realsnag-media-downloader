@@ -11,6 +11,14 @@ RealSnag Media Downloader is a cross-platform desktop media downloader built wit
 - CI/release: `.github/workflows/release.yml`.
 - License: MIT (see `LICENSE`); project is for educational purposes.
 
+## Project memory (distilled)
+
+<!-- Curated snapshot of prior agent session knowledge (2026-07-17). Claude's private memory remains canonical; update via Working notes. -->
+
+- Distribution philosophy: bundle everything needed for end users (yt-dlp, etc.); avoid requiring separate installs of Python, Homebrew, or other system tools. Auto-download from GitHub releases as a fallback when a bundled binary is unavailable for a platform.
+- No MSI/installer tooling — distribute releases as zip archives containing the executable directly. A proper installer is deliberately deferred to a future iteration; don't add installer tooling in the meantime.
+- UI framework choice: Semi.Avalonia was selected specifically as the closest Avalonia equivalent to a modern, shadcn-style component library, favoring a standardized/modern look over building custom controls.
+
 ## Cross-agent conventions
 
 - This file (`AGENTS.md`) is the single source of truth for agent instructions in this repo. `CLAUDE.md` and `.github/copilot-instructions.md` are pointers to it — never edit them, never duplicate content into them.
