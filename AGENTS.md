@@ -28,6 +28,8 @@ RealSnag Media Downloader is a cross-platform desktop media downloader built wit
 
 ## Working notes
 
+- 2026-10-12 - Operator accepted Avalonia 11 as the compatibility boundary for #25. Explicit NuGet upper bounds and Dependabot exclusions enforce it; docs/dependency-limits.md records the verified failures and the conditions for a future migration.
+
 - 2026-10-08: Dependabot alerts/security updates are enabled. Version updates run
   weekly on Monday at 06:00 Europe/Zurich for the manifests in .github/dependabot.yml.
   Minor/patch updates are grouped, majors stay separate, and merging remains review-driven.
