@@ -27,6 +27,12 @@ updates:
     default-days: 7
 - package-ecosystem: nuget
   directory: /
+  # Accepted Avalonia 11 compatibility limit: realgarit/realsnag-media-downloader#25.
+  ignore:
+  - dependency-name: "Avalonia*"
+    versions: ["[12.0.0,)"]
+  - dependency-name: "Semi.Avalonia"
+    versions: ["[12.0.0,)"]
   schedule:
     interval: weekly
     day: monday
