@@ -39,3 +39,5 @@ RealSnag Media Downloader is a cross-platform desktop media downloader built wit
 <!-- Any agent: append short dated notes here (YYYY-MM-DD — note). Prune notes when stale or once folded into the sections above. -->
 
 - 2026-09-16 — Codex-first layout sweep: repository-local shared skills use `.agents/skills/` as the canonical source. Any `.claude/skills/` path is only a compatibility bridge or generated mirror.
+
+- 2026-10-13: setup-dotnet v6 and download-artifact v7 use Node 24 on GitHub-hosted runners. PR runs now exercise all platform builds and artifact packaging; the release publication step runs only outside pull_request events.
