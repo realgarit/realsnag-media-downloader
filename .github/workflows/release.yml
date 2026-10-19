@@ -29,7 +29,7 @@ jobs:
         $binDir = "./publish/win-x64/bin"
         New-Item -ItemType Directory -Force -Path $binDir
         Move-Item "./yt-dlp-bin.exe" "$binDir/yt-dlp.exe"
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: publish-win-x64
         path: ./publish/win-x64
@@ -55,7 +55,7 @@ jobs:
         mv yt-dlp-bin ./publish/linux-x64/bin/yt-dlp
         chmod +x ./publish/linux-x64/bin/yt-dlp
         chmod +x ./publish/linux-x64/realsnag-media-downloader
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: publish-linux-x64
         path: ./publish/linux-x64
@@ -81,7 +81,7 @@ jobs:
         mv yt-dlp-bin ./publish/osx-x64/bin/yt-dlp
         chmod +x ./publish/osx-x64/bin/yt-dlp
         chmod +x ./publish/osx-x64/realsnag-media-downloader
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: publish-osx-x64
         path: ./publish/osx-x64
@@ -107,7 +107,7 @@ jobs:
         mv yt-dlp-bin ./publish/osx-arm64/bin/yt-dlp
         chmod +x ./publish/osx-arm64/bin/yt-dlp
         chmod +x ./publish/osx-arm64/realsnag-media-downloader
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: publish-osx-arm64
         path: ./publish/osx-arm64
